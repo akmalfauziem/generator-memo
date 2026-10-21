@@ -804,7 +804,7 @@
         }
 
         // Simpan Draft ke Supabase & LocalStorage
-        async function saveDraft() {
+async function saveDraft() {
             const noMemo = document.getElementById('inputNo').value;
             const tanggal = document.getElementById('inputTanggal').value;
             const kepada = document.getElementById('inputKepada').value;
@@ -812,6 +812,7 @@
             const jenisPerihal = document.getElementById('inputPerihal').value;
             const teksPerihal = document.getElementById('prevPerihal').textContent;
 
+            // Variabel penampung data dinamai 'draft'
             const draft = {
                 no: noMemo,
                 tanggal: tanggal,
@@ -821,45 +822,48 @@
                 jenis: jenisPerihal
             };
 
-            // Simpan ke LocalStorage sebagai cadangan
+            // 1. Simpan ke LocalStorage browser
             localStorage.setItem('memo_draft_v2', JSON.stringify(draft));
 
-            // Simpan ke Supabase
-            let isSavedCloud = false;
+            // 2. Simpan ke Supabase (Kirim variabel 'draft' dengan benar)
             if (supabaseClient) {
                 try {
                     const { data, error } = await supabaseClient
                         .from('memos')
                         .insert([
                             {
-                                no_memo: dataMemo.no,
-                                tanggal: dataMemo.tanggal,
-                                kepada: dataMemo.kepada,
-                                dari: dataMemo.dari,
-                                perihal: dataMemo.perihal,
-                                jenis_perihal: dataMemo.jenis,
-                                created_at:new Date().toISOString()
+                                no_memo: draft.no,
+                                tanggal: draft.tanggal,
+                                kepada: draft.kepada,
+                                dari: draft.dari,
+                                perihal: draft.perihal,
+                                jenis_perihal: draft.jenis,
+                                created_at: new Date().toISOString()
                             }
                         ]);
 
                     if (error) {
-                        console.warn("Gagal simpan Supabase, fallback local:", error.message);
-                    } else {
-                        isSavedCloud = true;
+                        console.error('Gagal menyimpan ke database:', error.message);
+                        alert('Gagal menyimpan ke database: ' + error.message);
+                        return; // Hentikan jika gagal agar counter tidak naik keliru
                     }
                 } catch (err) {
-                    console.warn("Exception saat simpan ke Supabase:", err);
+                    console.error("Exception saat simpan ke Supabase:", err);
+                    return;
                 }
             }
 
-            // Counter Auto Increment Nomor Urut Memo
+            // 3. Naikkan counter nomor memo jika berhasil
             let currentNoStr = noMemo.split('/')[0].trim();
             let currentNoInt = parseInt(currentNoStr);
             if (!isNaN(currentNoInt)) {
                 localStorage.setItem('kia_memo_counter', currentNoInt + 1);
             }
 
-            showToast(isSavedCloud ? "✓ Memo berhasil disimpan ke Database Cloud Supabase!" : "✓ Memo disimpan secara lokal!");
+            const toast = document.getElementById('toast');
+            toast.textContent = "✓ Data berhasil disimpan ke Cloud & counter nomor bertambah!";
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 3500);
         }
 
         // Fetch Riwayat Memo dari Supabase
