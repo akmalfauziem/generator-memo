@@ -5,22 +5,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generator Memorandum KIA-WT</title>
+    
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- CDN Supabase JS -->
+    <!-- Supabase JS SDK v2 -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+    <!-- Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f1f5f9;
         }
 
-        /* Styling Lembar Ukuran A4 */
+        /* Styling Lembar Ukuran A4 untuk Layar */
         .page-a4 {
             width: 210mm;
             min-height: 297mm;
@@ -31,7 +32,7 @@
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
-            /*justify-content: space-between;*/
+            justify-content: space-between;
             color: #000;
         }
 
@@ -46,6 +47,7 @@
                 background: white !important;
                 padding: 0 !important;
                 margin: 0 !important;
+                overflow: visible !important;
             }
 
             .no-print {
@@ -56,7 +58,9 @@
                 padding: 0 !important;
                 margin: 0 !important;
                 width: 100% !important;
+                height: auto !important;
                 background: white !important;
+                overflow: visible !important;
             }
 
             .page-a4 {
@@ -72,254 +76,349 @@
     </style>
 </head>
 
-<body class="h-screen flex flex-col md:flex-row overflow-hidden bg-slate-100">
+<body class="h-screen flex flex-col overflow-hidden bg-slate-100 text-slate-800">
 
-    <!-- ==================== KOLOM KIRI: FORM INPUT DATA ==================== -->
-    <div
-        class="no-print w-full md:w-1/2 lg:w-5/12 h-full bg-white border-r border-slate-200 flex flex-col shadow-xl z-10">
-        <!-- Header Panel Controls -->
-        <div class="p-4 border-b border-slate-700 bg-slate-900 text-white flex justify-between items-center">
-            <div>
-                <h1 class="text-base font-bold tracking-wide">Memorandum Generator</h1>
-                <p class="text-xs text-slate-400">Sistem Pembuatan Memo Resmi KIA-WT</p>
-            </div>
-            <span class="bg-blue-600 text-[11px] px-2.5 py-1 rounded-full font-semibold">Format A4</span>
-        </div>
-
-        <!-- Form Fields Scrollable -->
-        <div class="flex-1 overflow-y-auto p-4 space-y-4">
-
-            <!-- Notifikasi Toast -->
-            <div id="toast"
-                class="hidden p-3 bg-emerald-100 border border-emerald-400 text-emerald-800 text-xs rounded-lg">
-                ✓ Data draft berhasil disimpan di browser!
-            </div>
-
-            <!-- 1. Header Surat & Pilihan Perihal -->
-            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-3">
-                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500">1. Informasi Surat</h2>
-
-                <div class="grid grid-cols-2 gap-2.5">
-                    <div>
-                        <label class="block text-[11px] font-medium text-slate-700 mb-1">Nomor Memo</label>
-                        <input type="text" id="inputNo"
-                            class="w-full text-xs p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-medium text-slate-700 mb-1">Tanggal</label>
-                        <input type="date" id="inputTanggal"
-                            class="w-full text-xs p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-2.5">
-                    <div>
-                        <label class="block text-[11px] font-medium text-slate-700 mb-1">Kepada (To)</label>
-                        <input type="text" id="inputKepada" value="PGA Mgr. (Bp. Eko R.)"
-                            class="w-full text-xs p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-medium text-slate-700 mb-1">Dari (From)</label>
-                        <select id="inputDari"
-                            class="w-full text-xs p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
-                            <option value="SI. Plant KIA-WT">SI. Plant KIA-WT</option>
-                            <option value="Manager Plant KIA-WT">Manager Plant KIA-WT</option>
-                        </select>
-                    </div>
-                </div>
-
+    <!-- ==================== 1. TOP NAVBAR / HEADER ==================== -->
+    <header class="no-print bg-slate-900 text-white flex-none z-20 border-b border-slate-800 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between py-2.5 sm:py-3 gap-2">
+            <!-- Logo & Title -->
+            <div class="flex items-center space-x-3">
+                <div class="bg-blue-600 p-2 rounded-lg text-white font-black text-lg tracking-wider">KIA</div>
                 <div>
-                    <label class="block text-[11px] font-semibold text-blue-700 mb-1">Jenis Perihal / Template
-                        Memo</label>
-                    <select id="inputPerihal"
-                        class="w-full text-xs p-2.5 border-2 border-blue-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-blue-50 font-medium text-slate-800">
-                        <option value="status">Perubahan Status Personil</option>
-                        <option value="gaji">Pembayaran Kekurangan Gaji</option>
-                        <option value="jadwal">Perubahan Jadwal Kerja</option>
-                        <option value="barang">Permintaan Barang / Fasilitas</option>
-                    </select>
+                    <h1 class="text-base font-bold tracking-tight">Memorandum System</h1>
+                    <p class="text-xs text-slate-400">PT. Keramika Indonesia Assosiasi (Plant KIA-WT)</p>
                 </div>
             </div>
 
-            <!-- 2. Form Dinamis Sesuai Perihal -->
-            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-3">
-                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500" id="titleFormDinamis">2. Detail
-                    Data Perihal</h2>
+            <!-- Navigation Tabs & Badges -->
+            <div class="flex items-center space-x-2 sm:space-x-4">
+                <nav class="flex bg-slate-800 p-1 rounded-xl text-xs font-semibold">
+                    <button id="tabBtnGenerator" onclick="switchTab('generator')"
+                        class="px-3 py-1.5 rounded-lg bg-blue-600 text-white shadow transition flex items-center gap-1.5">
+                        📝 <span>Buat Memo</span>
+                    </button>
+                    <button id="tabBtnRiwayat" onclick="switchTab('riwayat')"
+                        class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white transition flex items-center gap-1.5">
+                        📋 <span>Riwayat Memo</span>
+                    </button>
+                </nav>
 
-                <!-- Form A: Perubahan Status Personil -->
-                <div id="formStatus" class="space-y-2.5">
-                    <div>
-                        <label class="block text-[11px] font-medium text-slate-700 mb-1">Section / Bagian</label>
-                        <select id="statusSection" class="w-full text-xs p-2 border border-slate-300 rounded bg-white">
-                            <option value="Press">Press</option>
-                            <option value="Body Preparation">Body Preparation</option>
-                            <option value="Kiln">Kiln</option>
-                            <option value="Glaze Preparation">Glaze Preparation</option>
-                            <option value="Glazing Line">Glazing Line</option>
-                            <option value="Sortir Packing">Sortir Packing</option>
-                        </select>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-[11px] font-medium text-slate-700 mb-1">Nama Personil</label>
-                            <input type="text" id="statusNama" value="Agung Munandar"
-                                class="w-full text-xs p-2 border border-slate-300 rounded">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] font-medium text-slate-700 mb-1">NIK</label>
-                            <input type="text" id="statusNik" value="082492"
-                                class="w-full text-xs p-2 border border-slate-300 rounded">
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-[11px] font-medium text-slate-700 mb-1">Status Awal</label>
-                            <input type="text" id="statusAwal" value="Operator Press"
-                                class="w-full text-xs p-2 border border-slate-300 rounded">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] font-medium text-slate-700 mb-1">Status Baru</label>
-                            <input type="text" id="statusBaru" value="Foreman Press"
-                                class="w-full text-xs p-2 border border-slate-300 rounded">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-medium text-slate-700 mb-1">Tanggal Efektif</label>
-                        <input type="text" id="statusEffective" value="21 October 2026"
-                            class="w-full text-xs p-2 border border-slate-300 rounded">
-                    </div>
+                <!-- Status Badges -->
+                <div class="hidden md:flex items-center space-x-2 text-[11px]">
+                    <span class="bg-slate-800 border border-slate-700 px-2.5 py-1 rounded-full font-medium text-slate-300">Format: A4 Portrait</span>
+                    <span id="badgeSupabase" class="bg-emerald-950 border border-emerald-700 text-emerald-400 px-2.5 py-1 rounded-full font-medium flex items-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        Supabase Connected
+                    </span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-1 overflow-hidden relative">
+
+        <!-- ==================== TAB 1: GENERATOR MEMORANDUM ==================== -->
+        <div id="tabGenerator" class="h-full w-full flex flex-col md:flex-row overflow-hidden">
+
+            <!-- KOLOM KIRI: FORM INPUT (SCROLLABLE) -->
+            <div class="no-print w-full md:w-1/2 lg:w-5/12 h-full bg-white border-r border-slate-200 flex flex-col shadow-xl z-10">
+                <!-- Header Control -->
+                <div class="p-3.5 border-b border-slate-200 bg-slate-50 flex justify-between items-center">
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-slate-600">Pengaturan Data Memo</h2>
+                    <span class="text-[11px] text-slate-500 font-medium">Otomatis Sync ke Preview</span>
                 </div>
 
-                <!-- Form B & C: Tabel Dinamis (Gaji & Jadwal) -->
-                <div id="formTabel" class="hidden space-y-3">
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs font-semibold text-slate-700">Daftar Karyawan</span>
-                        <button type="button" id="btnAddRow"
-                            class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 rounded font-medium transition">+
-                            Tambah Baris</button>
+                <!-- Form Inputs Container -->
+                <div class="flex-1 overflow-y-auto p-4 space-y-4">
+
+                    <!-- Toast Notifikasi -->
+                    <div id="toast" class="hidden p-3 bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs rounded-xl flex items-center justify-between transition-all">
+                        <span id="toastMsg">✓ Data draft berhasil disimpan!</span>
+                        <button onclick="hideToast()" class="text-emerald-800 font-bold ml-2">✕</button>
                     </div>
-                    <div id="tableInputsContainer" class="space-y-2.5 max-h-60 overflow-y-auto pr-1">
-                        <!-- Baris di-generate via JS -->
+
+                    <!-- 1. Informasi Surat -->
+                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-3">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1">
+                            <span>1. Informasi Surat</span>
+                        </h3>
+
+                        <div class="grid grid-cols-2 gap-2.5">
+                            <div>
+                                <label class="block text-[11px] font-medium text-slate-700 mb-1">Nomor Memo</label>
+                                <input type="text" id="inputNo"
+                                    class="w-full text-xs p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-medium text-slate-700 mb-1">Tanggal</label>
+                                <input type="date" id="inputTanggal"
+                                    class="w-full text-xs p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2.5">
+                            <div>
+                                <label class="block text-[11px] font-medium text-slate-700 mb-1">Kepada (To)</label>
+                                <input type="text" id="inputKepada" value="PGA Mgr. (Bp. Eko R.)"
+                                    class="w-full text-xs p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-medium text-slate-700 mb-1">Dari (From)</label>
+                                <select id="inputDari"
+                                    class="w-full text-xs p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
+                                    <option value="SI. Plant KIA-WT">SI. Plant KIA-WT</option>
+                                    <option value="Manager Plant KIA-WT">Manager Plant KIA-WT</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-semibold text-blue-800 mb-1">Jenis Perihal / Template Memo</label>
+                            <select id="inputPerihal"
+                                class="w-full text-xs p-2.5 border-2 border-blue-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-blue-50/70 font-semibold text-slate-800">
+                                <option value="status">Perubahan Status Personil</option>
+                                <option value="gaji">Pembayaran Kekurangan Gaji</option>
+                                <option value="jadwal">Perubahan Jadwal Kerja</option>
+                                <option value="barang">Permintaan Barang / Fasilitas</option>
+                            </select>
+                        </div>
                     </div>
+
+                    <!-- 2. Detail Data Perihal Dinamis -->
+                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-3">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600" id="titleFormDinamis">2. Detail Data Perihal</h3>
+
+                        <!-- Form A: Status Personil -->
+                        <div id="formStatus" class="space-y-2.5">
+                            <div>
+                                <label class="block text-[11px] font-medium text-slate-700 mb-1">Section / Bagian</label>
+                                <select id="statusSection" class="w-full text-xs p-2 border border-slate-300 rounded-lg bg-white">
+                                    <option value="Press">Press</option>
+                                    <option value="Body Preparation">Body Preparation</option>
+                                    <option value="Kiln">Kiln</option>
+                                    <option value="Glaze Preparation">Glaze Preparation</option>
+                                    <option value="Glazing Line">Glazing Line</option>
+                                    <option value="Sortir Packing">Sortir Packing</option>
+                                </select>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-[11px] font-medium text-slate-700 mb-1">Nama Personil</label>
+                                    <input type="text" id="statusNama" value="Agung Munandar" class="w-full text-xs p-2 border border-slate-300 rounded-lg">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-medium text-slate-700 mb-1">NIK</label>
+                                    <input type="text" id="statusNik" value="082492" class="w-full text-xs p-2 border border-slate-300 rounded-lg">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-[11px] font-medium text-slate-700 mb-1">Status Awal</label>
+                                    <input type="text" id="statusAwal" value="Operator Press" class="w-full text-xs p-2 border border-slate-300 rounded-lg">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-medium text-slate-700 mb-1">Status Baru</label>
+                                    <input type="text" id="statusBaru" value="Foreman Press" class="w-full text-xs p-2 border border-slate-300 rounded-lg">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-medium text-slate-700 mb-1">Tanggal Efektif</label>
+                                <input type="text" id="statusEffective" value="21 October 2026" class="w-full text-xs p-2 border border-slate-300 rounded-lg">
+                            </div>
+                        </div>
+
+                        <!-- Form B & C: Tabel Dinamis (Gaji / Jadwal) -->
+                        <div id="formTabel" class="hidden space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs font-semibold text-slate-700">Daftar Karyawan</span>
+                                <button type="button" id="btnAddRow"
+                                    class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 rounded-lg font-medium transition flex items-center gap-1">
+                                    <span>+</span> Tambah Baris
+                                </button>
+                            </div>
+                            <div id="tableInputsContainer" class="space-y-2.5 max-h-60 overflow-y-auto pr-1"></div>
+                        </div>
+
+                        <!-- Form D: Permintaan Barang -->
+                        <div id="formBarang" class="hidden space-y-2.5">
+                            <div>
+                                <label class="block text-[11px] font-medium text-slate-700 mb-1">Judul Permintaan / Perihal</label>
+                                <input type="text" id="barangJudulPerihal"
+                                    value="Permintaan Komputer untuk Spv. Body Preparation"
+                                    class="w-full text-xs p-2 border border-slate-300 rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-medium text-slate-700 mb-1">Isi Surat Permintaan</label>
+                                <textarea id="barangIsiPesan" rows="5"
+                                    class="w-full text-xs p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none resize-y">Untuk menunjang aktivitas administrasi data kontrol operasional harian dan kegiatan focus improvement di bagian body preparation, maka dengan ini diajukan pengadaan 1 unit komputer yang akan dipergunakan oleh Supervisor Body Preparation & Press plant wall tile.</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Pengaturan Tanda Tangan -->
+                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-3">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600">3. Penandatangan (Pengesahan)</h3>
+                        <div id="ttdSelectorsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5"></div>
+                    </div>
+
                 </div>
 
-                <!-- Form D: Permintaan Barang -->
-                <div id="formBarang" class="hidden space-y-2.5">
-                    <div>
-                        <label class="block text-[11px] font-medium text-slate-700 mb-1">Judul Permintaan /
-                            Perihal</label>
-                        <input type="text" id="barangJudulPerihal"
-                            value="Permintaan Komputer untuk Spv. Body Preparation"
-                            class="w-full text-xs p-2 border border-slate-300 rounded">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-medium text-slate-700 mb-1">Isi Surat Permintaan</label>
-                        <textarea id="barangIsiPesan" rows="5"
-                            class="w-full text-xs p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none resize-y">Untuk menunjang aktivitas administrasi data kontrol operasional harian dan kegiatan focus improvement di bagian body preparation, maka dengan ini diajukan pengadaan 1 unit komputer yang akan dipergunakan oleh Supervisor Body Preparation & Press plant wall tile.</textarea>
-                    </div>
+                <!-- Footer Action Buttons -->
+                <div class="p-3.5 border-t border-slate-200 bg-slate-100 flex gap-2.5">
+                    <button id="btnSave" onclick="saveDraft()"
+                        class="flex-1 py-2.5 px-3 bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold rounded-lg shadow transition flex items-center justify-center gap-1.5">
+                        <span>💾</span> Simpan Ke Supabase
+                    </button>
+                    <button id="btnPrint" onclick="window.print()"
+                        class="flex-1 py-2.5 px-3 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow transition flex items-center justify-center gap-1.5">
+                        <span>🖨️</span> Cetak / PDF
+                    </button>
                 </div>
             </div>
 
-            <!-- 3. Pengaturan Tanda Tangan Dinamis -->
-            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-3">
-                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500">3. Penandatangan (Pengesahan)</h2>
-                <div id="ttdSelectorsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                    <!-- Dropdown TTD di-generate via JS -->
+            <!-- KOLOM KANAN: LIVE PREVIEW KERTAS A4 -->
+            <div class="print-area w-full md:w-1/2 lg:w-7/12 h-full overflow-y-auto p-4 md:p-8 flex justify-center items-start bg-slate-300/80">
+                
+                <!-- Dokumen Kertas A4 -->
+                <div class="page-a4 text-black leading-relaxed font-sans text-sm border border-slate-300">
+                    
+                    <!-- Top Section -->
+                    <div>
+                        <!-- Header Title -->
+                        <div class="text-center mb-6">
+                            <h1 class="text-2xl font-bold tracking-widest text-black uppercase underline decoration-2 underline-offset-4">
+                                MEMORANDUM
+                            </h1>
+                        </div>
+
+                        <!-- Header Info Box -->
+                        <div class="border-t-2 border-b-2 border-black py-2.5 my-3 space-y-1.5 text-xs md:text-sm">
+                            <div class="flex justify-between items-start">
+                                <div class="flex w-2/3">
+                                    <span class="w-16 font-semibold">No</span>
+                                    <span class="mr-2">:</span>
+                                    <span id="prevNo" class="font-medium"></span>
+                                </div>
+                                <div class="flex w-1/3 justify-end">
+                                    <span class="font-semibold mr-2">Tanggal :</span>
+                                    <span id="prevTanggal"></span>
+                                </div>
+                            </div>
+
+                            <div class="flex">
+                                <span class="w-16 font-semibold">Kepada</span>
+                                <span class="mr-2">:</span>
+                                <span id="prevKepada"></span>
+                            </div>
+
+                            <div class="flex">
+                                <span class="w-16 font-semibold">Dari</span>
+                                <span class="mr-2">:</span>
+                                <span id="prevDari"></span>
+                            </div>
+
+                            <div class="flex">
+                                <span class="w-16 font-semibold">Perihal</span>
+                                <span class="mr-2">:</span>
+                                <span id="prevPerihal" class="font-bold underline"></span>
+                            </div>
+                        </div>
+
+                        <!-- Divider Line -->
+                        <div class="w-full h-1 bg-black mb-5"></div>
+
+                        <!-- Content Body -->
+                        <div class="space-y-4 text-justify px-1">
+                            <p class="font-medium">Dengan Hormat,</p>
+                            <p id="prevKalimatPembuka" class="leading-relaxed"></p>
+                            <div id="prevContentDinamis" class="my-4"></div>
+                            <p id="prevKalimatPenutup" class="leading-relaxed"></p>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Section (Tanda Tangan) -->
+                    <div class="mt-12 pt-4">
+                        <div id="prevTtdGrid" class="grid gap-4 text-center"></div>
+                    </div>
+
                 </div>
+
             </div>
 
         </div>
 
-        <!-- Panel Tombol Aksi -->
-        <div class="p-3.5 border-t border-slate-200 bg-slate-100 flex gap-2.5">
-            <button id="btnSave"
-                class="flex-1 py-2 px-3 bg-slate-700 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg shadow transition flex items-center justify-center gap-1.5">
-                💾 Simpan Draft
-            </button>
-            <button id="btnPrint"
-                class="flex-1 py-2 px-3 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow transition flex items-center justify-center gap-1.5">
-                🖨️ Cetak / PDF
-            </button>
-        </div>
-    </div>
 
-
-    <!-- ==================== KOLOM KANAN: LIVE PREVIEW KERTAS A4 ==================== -->
-    <div
-        class="print-area w-full md:w-1/2 lg:w-7/12 h-full overflow-y-auto p-4 md:p-8 flex justify-center items-start bg-slate-300">
-
-        <!-- Dokumen Kertas A4 -->
-        <div class="page-a4 text-black leading-relaxed font-sans text-sm border border-slate-300">
-
-            <!-- Bagian Header Memo -->
-            <div>
-                <div class="text-center mb-6">
-                    <h1
-                        class="text-2xl font-bold tracking-widest text-black uppercase underline decoration-2 underline-offset-4">
-                        MEMORANDUM</h1>
-                </div>
-
-                <!-- Informasi Header Surat -->
-                <div class="border-t-2 border-b-2 border-black py-2.5 my-3 space-y-1.5 text-xs md:text-sm">
-                    <div class="flex justify-between items-start">
-                        <div class="flex w-2/3">
-                            <span class="w-16 font-semibold">No</span>
-                            <span class="mr-2">:</span>
-                            <span id="prevNo" class="font-medium"></span>
-                        </div>
-                        <div class="flex w-1/3 justify-end">
-                            <span class="font-semibold mr-2">Tanggal :</span>
-                            <span id="prevTanggal"></span>
+        <!-- ==================== TAB 2: RIWAYAT MEMO (DATABASE SUPABASE) ==================== -->
+        <div id="tabRiwayat" class="hidden h-full w-full overflow-y-auto p-4 md:p-8 bg-slate-100">
+            <div class="max-w-6xl mx-auto space-y-6">
+                
+                <!-- Stat Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-4">
+                        <div class="p-3 bg-blue-100 text-blue-600 rounded-lg text-2xl">📋</div>
+                        <div>
+                            <p class="text-xs font-semibold text-slate-500 uppercase">Total Memo Tersimpan</p>
+                            <h4 id="statTotalMemo" class="text-xl font-bold text-slate-800">0</h4>
                         </div>
                     </div>
-
-                    <div class="flex">
-                        <span class="w-16 font-semibold">Kepada</span>
-                        <span class="mr-2">:</span>
-                        <span id="prevKepada"></span>
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-4">
+                        <div class="p-3 bg-emerald-100 text-emerald-600 rounded-lg text-2xl">📅</div>
+                        <div>
+                            <p class="text-xs font-semibold text-slate-500 uppercase">Memo Bulan Ini</p>
+                            <h4 id="statMemoBulanIni" class="text-xl font-bold text-slate-800">0</h4>
+                        </div>
                     </div>
-
-                    <div class="flex">
-                        <span class="w-16 font-semibold">Dari</span>
-                        <span class="mr-2">:</span>
-                        <span id="prevDari"></span>
-                    </div>
-
-                    <div class="flex">
-                        <span class="w-16 font-semibold">Perihal</span>
-                        <span class="mr-2">:</span>
-                        <span id="prevPerihal" class="font-bold underline"></span>
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-4">
+                        <div class="p-3 bg-purple-100 text-purple-600 rounded-lg text-2xl">☁️</div>
+                        <div>
+                            <p class="text-xs font-semibold text-slate-500 uppercase">Status Database</p>
+                            <h4 id="statDatabaseStatus" class="text-base font-bold text-emerald-600">Supabase Connected</h4>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Garis Pemisah Tebal Hitam -->
-                <div class="w-full h-1 bg-black mb-5"></div>
+                <!-- Main Table Box -->
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                    <!-- Filter & Search Bar -->
+                    <div class="p-4 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-3">
+                        <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Daftar Memo Tersimpan di Supabase</h3>
+                        <div class="flex items-center space-x-2 w-full sm:w-auto">
+                            <input type="text" id="searchMemoInput" oninput="filterRiwayatMemo()" placeholder="Cari No. Memo atau Perihal..."
+                                class="w-full sm:w-64 text-xs p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <button onclick="fetchRiwayatMemo()" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow transition">
+                                🔄 Refresh
+                            </button>
+                        </div>
+                    </div>
 
-                <!-- Isi Pesan & Konten Utama -->
-                <div class="space-y-4 text-justify px-1">
-                    <p class="font-medium">Dengan Hormat,</p>
-
-                    <!-- Pembuka Kalimat -->
-                    <p id="prevKalimatPembuka" class="leading-relaxed"></p>
-
-                    <!-- Area Konten Dinamis (Detail / Tabel) -->
-                    <div id="prevContentDinamis" class="my-4"></div>
-
-                    <!-- Penutup Kalimat -->
-                    <p id="prevKalimatPenutup" class="leading-relaxed"></p>
+                    <!-- Table List -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs text-left text-slate-600">
+                            <thead class="bg-slate-100 text-slate-700 uppercase font-semibold border-b border-slate-200">
+                                <tr>
+                                    <th class="p-3">No. Memo</th>
+                                    <th class="p-3">Tanggal</th>
+                                    <th class="p-3">Kepada</th>
+                                    <th class="p-3">Dari</th>
+                                    <th class="p-3">Perihal</th>
+                                    <th class="p-3">Waktu Simpan</th>
+                                    <th class="p-3 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="riwayatTableBody" class="divide-y divide-slate-200">
+                                <tr>
+                                    <td colspan="7" class="p-6 text-center text-slate-400">Memuat data dari database Supabase...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
+
             </div>
-
-            <!-- Bagian Pengesahan / Tanda Tangan -->
-            <div class="mt-16 pt-4">
-                <div id="prevTtdGrid" class="grid gap-4 text-center">
-                    <!-- Kolom TTD di-render otomatis via JS -->
-                </div>
-            </div>
-
         </div>
 
-    </div>
+    </main>
 
 
     <!-- ==================== LOGIKA JAVASCRIPT ==================== -->
@@ -341,10 +440,23 @@
 
         let dataTabelJadwal = [
             { nama: "Bahri", nik: "082612", lama: "Sortir Grup A", baru: "Klin Grup B", effective: "21/08/2026" },
-            { nama: "Suyatno", nik: "082294", lama: "Glazing Grup C", baru: "Glazing Grup B", effective: "21/08/2026" },
-            { nama: "Anang", nik: "082251", lama: "Klin Grup B", baru: "KliIn Grup A", effective: "21/08/2026" },
-            { nama: "AGUNG MUNANDAR", nik: "082492", lama: "Press Grup B", baru: "Press Grup C", effective: "21/08/2026 text" }
+            { nama: "Suyatno", nik: "082294", lama: "Glazing Grup C", baru: "Glazing Grup B", effective: "21/08/2026" }
         ];
+
+        let rawRiwayatMemos = [];
+
+        // Supabase Configuration
+        const SUPABASE_URL = 'https://akgjkgkgfzdpfoyfmxno.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFrZ2prZ2tnZnpkcGZveWZteG5vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI1NDU0NDEsImV4cCI6MjEwODEyMTQ0MX0.akKCYFg_9OY77CDIrCKVYQAzCFxq-vIO0XmqP7yUCXw';
+        
+        let supabaseClient = null;
+        try {
+            if (window.supabase) {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            }
+        } catch (e) {
+            console.error("Gagal menginisialisasi Supabase SDK:", e);
+        }
 
         // Format Bulan Romawi
         function getBulanRomawi(bulanIndex) {
@@ -360,13 +472,33 @@
             return `${String(date.getDate()).padStart(2, '0')}-${listBulan[date.getMonth()]}-${date.getFullYear()}`;
         }
 
+        // Switch Navigation Tabs
+        function switchTab(tabName) {
+            const tabGen = document.getElementById('tabGenerator');
+            const tabRiw = document.getElementById('tabRiwayat');
+            const btnGen = document.getElementById('tabBtnGenerator');
+            const btnRiw = document.getElementById('tabBtnRiwayat');
+
+            if (tabName === 'generator') {
+                tabGen.classList.remove('hidden');
+                tabRiw.classList.add('hidden');
+                btnGen.className = "px-3 py-1.5 rounded-lg bg-blue-600 text-white shadow transition flex items-center gap-1.5";
+                btnRiw.className = "px-3 py-1.5 rounded-lg text-slate-300 hover:text-white transition flex items-center gap-1.5";
+            } else {
+                tabGen.classList.add('hidden');
+                tabRiw.classList.remove('hidden');
+                btnRiw.className = "px-3 py-1.5 rounded-lg bg-blue-600 text-white shadow transition flex items-center gap-1.5";
+                btnGen.className = "px-3 py-1.5 rounded-lg text-slate-300 hover:text-white transition flex items-center gap-1.5";
+                fetchRiwayatMemo();
+            }
+        }
+
         // Inisialisasi Saat Halaman Dimuat
         window.addEventListener('DOMContentLoaded', () => {
             const today = new Date();
             const tahunSekarang = today.getFullYear();
             const bulanRomawi = getBulanRomawi(today.getMonth());
 
-            // Ambil nomor urut terakhir dari localStorage, jika belum ada mulai dari 1
             let nomorUrut = localStorage.getItem('kia_memo_counter');
             if (!nomorUrut) {
                 nomorUrut = 1;
@@ -374,16 +506,13 @@
                 nomorUrut = parseInt(nomorUrut);
             }
 
-            // Format menjadi 3 digit (contoh: 001, 002, dst)
             const formatNoUrut = String(nomorUrut).padStart(2, '0');
             document.getElementById('inputNo').value = `${formatNoUrut} / SI.KIA-WT / ${bulanRomawi} / ${tahunSekarang}`;
-
             document.getElementById('inputTanggal').valueAsDate = today;
 
-            // Event Listener Pilihan Perihal
+            // Event Listeners
             document.getElementById('inputPerihal').addEventListener('change', onPerihalChange);
 
-            // Event Listeners Input Utama
             ['inputNo', 'inputTanggal', 'inputKepada', 'inputDari', 'statusSection', 'statusNama', 'statusNik', 'statusAwal', 'statusBaru', 'statusEffective', 'barangJudulPerihal', 'barangIsiPesan'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.addEventListener('input', renderPreview);
@@ -400,10 +529,7 @@
                 renderPreview();
             });
 
-            document.getElementById('btnSave').addEventListener('click', saveDraft);
-            document.getElementById('btnPrint').addEventListener('click', () => window.print());
-
-            // Render Awal
+            // Initial Render
             onPerihalChange();
         });
 
@@ -411,7 +537,6 @@
         function onPerihalChange() {
             const jenis = document.getElementById('inputPerihal').value;
 
-            // Sembunyikan semua section form
             document.getElementById('formStatus').classList.add('hidden');
             document.getElementById('formTabel').classList.add('hidden');
             document.getElementById('formBarang').classList.add('hidden');
@@ -438,39 +563,39 @@
             if (jenis === 'gaji') {
                 dataTabelGaji.forEach((row, idx) => {
                     const div = document.createElement('div');
-                    div.className = "p-2.5 bg-white rounded border border-slate-200 text-xs space-y-1.5 relative";
+                    div.className = "p-2.5 bg-white rounded-lg border border-slate-200 text-xs space-y-1.5 relative";
                     div.innerHTML = `
                         <div class="flex justify-between font-semibold text-slate-500 border-b pb-1">
                             <span>Karyawan #${idx + 1}</span>
                             ${dataTabelGaji.length > 1 ? `<button type="button" onclick="removeRow('gaji', ${idx})" class="text-red-500 hover:text-red-700">Hapus</button>` : ''}
                         </div>
                         <div class="grid grid-cols-2 gap-1.5">
-                            <input type="text" placeholder="Nama Karyawan" value="${row.nama}" oninput="updateRowData('gaji', ${idx}, 'nama', this.value)" class="p-1 border rounded">
-                            <input type="text" placeholder="NIK" value="${row.nik}" oninput="updateRowData('gaji', ${idx}, 'nik', this.value)" class="p-1 border rounded">
+                            <input type="text" placeholder="Nama Karyawan" value="${row.nama}" oninput="updateRowData('gaji', ${idx}, 'nama', this.value)" class="p-1.5 border rounded">
+                            <input type="text" placeholder="NIK" value="${row.nik}" oninput="updateRowData('gaji', ${idx}, 'nik', this.value)" class="p-1.5 border rounded">
                         </div>
-                        <input type="text" placeholder="Bagian / Jabatan" value="${row.bagian}" oninput="updateRowData('gaji', ${idx}, 'bagian', this.value)" class="w-full p-1 border rounded">
-                        <input type="text" placeholder="Keterangan Lembur" value="${row.keterangan}" oninput="updateRowData('gaji', ${idx}, 'keterangan', this.value)" class="w-full p-1 border rounded">
+                        <input type="text" placeholder="Bagian / Jabatan" value="${row.bagian}" oninput="updateRowData('gaji', ${idx}, 'bagian', this.value)" class="w-full p-1.5 border rounded">
+                        <input type="text" placeholder="Keterangan Lembur" value="${row.keterangan}" oninput="updateRowData('gaji', ${idx}, 'keterangan', this.value)" class="w-full p-1.5 border rounded">
                     `;
                     container.appendChild(div);
                 });
             } else if (jenis === 'jadwal') {
                 dataTabelJadwal.forEach((row, idx) => {
                     const div = document.createElement('div');
-                    div.className = "p-2.5 bg-white rounded border border-slate-200 text-xs space-y-1.5 relative";
+                    div.className = "p-2.5 bg-white rounded-lg border border-slate-200 text-xs space-y-1.5 relative";
                     div.innerHTML = `
                         <div class="flex justify-between font-semibold text-slate-500 border-b pb-1">
                             <span>Karyawan #${idx + 1}</span>
                             ${dataTabelJadwal.length > 1 ? `<button type="button" onclick="removeRow('jadwal', ${idx})" class="text-red-500 hover:text-red-700">Hapus</button>` : ''}
                         </div>
                         <div class="grid grid-cols-2 gap-1.5">
-                            <input type="text" placeholder="Nama Karyawan" value="${row.nama}" oninput="updateRowData('jadwal', ${idx}, 'nama', this.value)" class="p-1 border rounded">
-                            <input type="text" placeholder="NIK" value="${row.nik}" oninput="updateRowData('jadwal', ${idx}, 'nik', this.value)" class="p-1 border rounded">
+                            <input type="text" placeholder="Nama Karyawan" value="${row.nama}" oninput="updateRowData('jadwal', ${idx}, 'nama', this.value)" class="p-1.5 border rounded">
+                            <input type="text" placeholder="NIK" value="${row.nik}" oninput="updateRowData('jadwal', ${idx}, 'nik', this.value)" class="p-1.5 border rounded">
                         </div>
                         <div class="grid grid-cols-2 gap-1.5">
-                            <input type="text" placeholder="Jadwal Lama" value="${row.lama}" oninput="updateRowData('jadwal', ${idx}, 'lama', this.value)" class="p-1 border rounded">
-                            <input type="text" placeholder="Jadwal Baru" value="${row.baru}" oninput="updateRowData('jadwal', ${idx}, 'baru', this.value)" class="p-1 border rounded">
+                            <input type="text" placeholder="Jadwal Lama" value="${row.lama}" oninput="updateRowData('jadwal', ${idx}, 'lama', this.value)" class="p-1.5 border rounded">
+                            <input type="text" placeholder="Jadwal Baru" value="${row.baru}" oninput="updateRowData('jadwal', ${idx}, 'baru', this.value)" class="p-1.5 border rounded">
                         </div>
-                        <input type="text" placeholder="Effective Date" value="${row.effective}" oninput="updateRowData('jadwal', ${idx}, 'effective', this.value)" class="w-full p-1 border rounded">
+                        <input type="text" placeholder="Effective Date" value="${row.effective}" oninput="updateRowData('jadwal', ${idx}, 'effective', this.value)" class="w-full p-1.5 border rounded">
                     `;
                     container.appendChild(div);
                 });
@@ -490,27 +615,27 @@
             renderPreview();
         }
 
-        // Render Dropdown Pemilihan Tanda Tangan
+        // Render Dropdown TTD
         function renderTtdSelectors() {
             const jenis = document.getElementById('inputPerihal').value;
             const container = document.getElementById('ttdSelectorsContainer');
             container.innerHTML = "";
 
             let configs = [];
-            if (jenis === 'status') { // 4 TTD
+            if (jenis === 'status') {
                 configs = [
                     { label: "1. Pengaju (Kiri)", default: "Ibrohim Aji" },
                     { label: "2. Mengetahui", default: "Eko Raharjo" },
                     { label: "3. Menyetujui 1", default: "Gunarso" },
                     { label: "4. Menyetujui 2 (Kanan)", default: "Kairawee Teetuan" }
                 ];
-            } else if (jenis === 'gaji' || jenis === 'barang') { // 3 TTD
+            } else if (jenis === 'gaji' || jenis === 'barang') {
                 configs = [
                     { label: "1. Dibuat Oleh", default: "Adih Hidayat" },
                     { label: "2. Mengetahui", default: "Ibrohim Aji" },
                     { label: "3. Menyetujui", default: "Kairawee Teetuan" }
                 ];
-            } else if (jenis === 'jadwal') { // 2 TTD
+            } else if (jenis === 'jadwal') {
                 configs = [
                     { label: "1. Dibuat Oleh", default: "Adih Hidayat" },
                     { label: "2. Menyetujui", default: "Ibrohim Aji" }
@@ -521,7 +646,7 @@
                 const div = document.createElement('div');
                 div.innerHTML = `
                     <label class="block text-[11px] font-medium text-slate-700 mb-1">${cfg.label}</label>
-                    <select id="ttdSel_${idx}" class="w-full text-xs p-2 border border-slate-300 rounded bg-white">
+                    <select id="ttdSel_${idx}" class="w-full text-xs p-2 border border-slate-300 rounded-lg bg-white">
                         ${listPersonel.map(p => `<option value="${p.nama}" ${p.nama === cfg.default ? 'selected' : ''}>${p.nama}</option>`).join('')}
                     </select>
                 `;
@@ -530,11 +655,10 @@
             });
         }
 
-        // Render Tampilan Utama Memo A4
+        // Render Live Preview A4
         function renderPreview() {
             const jenis = document.getElementById('inputPerihal').value;
 
-            // Header
             document.getElementById('prevNo').textContent = document.getElementById('inputNo').value;
             document.getElementById('prevTanggal').textContent = formatTanggalIndo(document.getElementById('inputTanggal').value);
             document.getElementById('prevKepada').textContent = document.getElementById('inputKepada').value;
@@ -544,7 +668,6 @@
             const elKalimatPenutup = document.getElementById('prevKalimatPenutup');
             const elContent = document.getElementById('prevContentDinamis');
 
-            // Render Konten Perihal
             if (jenis === 'status') {
                 const sec = document.getElementById('statusSection').value;
                 document.getElementById('prevPerihal').textContent = `Perubahan Status Personil ${sec}`;
@@ -638,11 +761,10 @@
                 elKalimatPenutup.textContent = "Demikian surat permohonan ini Saya buat, terima kasih atas perhatiannya.";
             }
 
-            // Render Tanda Tangan Grid
             renderTtdGrid(jenis);
         }
 
-        // Render Kolom TTD di Kertas A4
+        // Render Tanda Tangan
         function renderTtdGrid(jenis) {
             const grid = document.getElementById('prevTtdGrid');
             grid.innerHTML = "";
@@ -681,7 +803,7 @@
             }
         }
 
- // Simpan Draft, Naikkan Nomor Urut, & Kirim ke Supabase
+        // Simpan Draft ke Supabase & LocalStorage
         async function saveDraft() {
             const noMemo = document.getElementById('inputNo').value;
             const tanggal = document.getElementById('inputTanggal').value;
@@ -695,69 +817,166 @@
                 tanggal: tanggal,
                 kepada: kepada,
                 dari: dari,
-                perihal: teksPerihal, // Teks perihal lengkap
-                jenis: jenisPerihal,   // Kode kategori (status/gaji/dll)
-                dataGaji: dataTabelGaji,
-                dataJadwal: dataTabelJadwal
+                perihal: teksPerihal,
+                jenis: jenisPerihal
             };
 
-            // 1. Simpan ke LocalStorage browser
+            // Simpan ke LocalStorage sebagai cadangan
             localStorage.setItem('memo_draft_v2', JSON.stringify(draft));
 
-            // 2. KIRIM DATA KE SUPABASE (Bagian ini yang sebelumnya kurang)
-            await simpanKeSupabase(draft);
+            // Simpan ke Supabase
+            let isSavedCloud = false;
+            if (supabaseClient) {
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('memos')
+                        .insert([
+                            {
+                                no_memo: dataMemo.no,
+                                tanggal: dataMemo.tanggal,
+                                kepada: dataMemo.kepada,
+                                dari: dataMemo.dari,
+                                perihal: dataMemo.perihal,
+                                jenis_perihal: dataMemo.jenis
+                            }
+                        ]);
 
-            // 3. Ambil nomor saat ini dari input, lalu naikkan counter untuk memo berikutnya
+                    if (error) {
+                        console.warn("Gagal simpan Supabase, fallback local:", error.message);
+                    } else {
+                        isSavedCloud = true;
+                    }
+                } catch (err) {
+                    console.warn("Exception saat simpan ke Supabase:", err);
+                }
+            }
+
+            // Counter Auto Increment Nomor Urut Memo
             let currentNoStr = noMemo.split('/')[0].trim();
             let currentNoInt = parseInt(currentNoStr);
             if (!isNaN(currentNoInt)) {
-                // Simpan nomor urut berikutnya ke localStorage
                 localStorage.setItem('kia_memo_counter', currentNoInt + 1);
             }
 
-            const toast = document.getElementById('toast');
-            toast.textContent = "✓ Draft tersimpan ke Cloud & nomor memo otomatis naik!";
-            toast.classList.remove('hidden');
-            setTimeout(() => toast.classList.add('hidden'), 3500);
+            showToast(isSavedCloud ? "✓ Memo berhasil disimpan ke Database Cloud Supabase!" : "✓ Memo disimpan secara lokal!");
         }
 
-        // Inisialisasi Supabase Client (URL bersih tanpa /rest/v1/memos)
-        const SUPABASE_URL = 'https://akgjkgkgfzdpfoyfmxno.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFrZ2prZ2tnZnpkcGZveWZteG5vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI1NDU0NDEsImV4cCI6MjEwODEyMTQ0MX0.akKCYFg_9OY77CDIrCKVYQAzCFxq-vIO0XmqP7yUCXw';
-        
-        let supabaseClient = null;
-        try {
-            supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        } catch (e) {
-            console.error("Gagal menginisialisasi Supabase:", e);
-        }
+        // Fetch Riwayat Memo dari Supabase
+        async function fetchRiwayatMemo() {
+            const tbody = document.getElementById('riwayatTableBody');
+            tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400">Memuat data riwayat dari Supabase...</td></tr>`;
 
-        // Fungsi Simpan Memo ke Supabase
-        async function simpanKeSupabase(dataMemo) {
             if (!supabaseClient) {
-                console.error("Supabase client belum siap.");
+                tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-red-500 font-semibold">Supabase SDK belum siap. Pastikan koneksi internet stabil.</td></tr>`;
                 return;
             }
 
-            const { data, error } = await supabaseClient
-                .from('memos')
-                .insert([
-                    {
-                        no_memo: dataMemo.no,
-                        tanggal: dataMemo.tanggal,
-                        kepada: dataMemo.kepada,
-                        dari: dataMemo.dari,
-                        perihal: dataMemo.perihal,
-                        jenis_perihal: dataMemo.jenis
-                    }
-                ]);
+            try {
+                const { data, error } = await supabaseClient
+                    .from('memos')
+                    .select('*')
+                    .order('created_at', { ascending: false });
 
-            if (error) {
-                console.error('Gagal menyimpan ke database:', error.message);
-                alert('Gagal menyimpan ke database: ' + error.message);
-            } else {
-                console.log('Berhasil disimpan ke Supabase!', data);
+                if (error) throw error;
+
+                rawRiwayatMemos = data || [];
+                updateStatsCards(rawRiwayatMemos);
+                renderRiwayatTable(rawRiwayatMemos);
+
+            } catch (error) {
+                console.error("Gagal mengambil data memo:", error.message);
+                tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-red-500 font-semibold">Gagal memuat data: ${error.message}</td></tr>`;
             }
+        }
+
+        // Update Stat Cards pada Tab Riwayat
+        function updateStatsCards(data) {
+            document.getElementById('statTotalMemo').textContent = data.length;
+            
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
+            
+            const countThisMonth = data.filter(item => {
+                if (!item.tanggal) return false;
+                const d = new Date(item.tanggal);
+                return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+            }).length;
+
+            document.getElementById('statMemoBulanIni').textContent = countThisMonth;
+        }
+
+        // Render Tabel Riwayat
+        function renderRiwayatTable(data) {
+            const tbody = document.getElementById('riwayatTableBody');
+            tbody.innerHTML = "";
+
+            if (!data || data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400">Belum ada memo yang tersimpan di database.</td></tr>`;
+                return;
+            }
+
+            data.forEach((memo) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+                
+                const formattedCreatedAt = memo.created_at ? new Date(memo.created_at).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' }) : '-';
+
+                tr.innerHTML = `
+                    <td class="p-3 font-bold text-slate-800">${memo.no_memo || '-'}</td>
+                    <td class="p-3 font-medium">${formatTanggalIndo(memo.tanggal)}</td>
+                    <td class="p-3">${memo.kepada || '-'}</td>
+                    <td class="p-3">${memo.dari || '-'}</td>
+                    <td class="p-3 max-w-xs truncate font-semibold text-slate-700" title="${memo.perihal}">${memo.perihal || '-'}</td>
+                    <td class="p-3 text-slate-400 text-[11px]">${formattedCreatedAt}</td>
+                    <td class="p-3 text-center">
+                        <button onclick="loadMemoToEditor('${memo.no_memo}', '${memo.tanggal}', '${memo.kepada}', '${memo.dari}', '${memo.jenis_perihal}')" 
+                            class="px-2.5 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold rounded transition text-[11px]">
+                            👁️ Muat Ke Editor
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Filter Riwayat Memo dengan Search Box
+        function filterRiwayatMemo() {
+            const query = document.getElementById('searchMemoInput').value.toLowerCase();
+            const filtered = rawRiwayatMemos.filter(m => 
+                (m.no_memo && m.no_memo.toLowerCase().includes(query)) ||
+                (m.perihal && m.perihal.toLowerCase().includes(query)) ||
+                (m.kepada && m.kepada.toLowerCase().includes(query))
+            );
+            renderRiwayatTable(filtered);
+        }
+
+        // Muat Data Memo dari Riwayat ke Form Editor Generator
+        function loadMemoToEditor(noMemo, tanggal, kepada, dari, jenisPerihal) {
+            document.getElementById('inputNo').value = noMemo || "";
+            if (tanggal) document.getElementById('inputTanggal').value = tanggal;
+            if (kepada) document.getElementById('inputKepada').value = kepada;
+            if (dari) document.getElementById('inputDari').value = dari;
+            
+            if (jenisPerihal && ['status', 'gaji', 'jadwal', 'barang'].includes(jenisPerihal)) {
+                document.getElementById('inputPerihal').value = jenisPerihal;
+                onPerihalChange();
+            } else {
+                renderPreview();
+            }
+
+            switchTab('generator');
+            showToast("✓ Memo berhasil dimuat ke editor!");
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').textContent = msg;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 4000);
+        }
+
+        function hideToast() {
+            document.getElementById('toast').classList.add('hidden');
         }
     </script>
 </body>
