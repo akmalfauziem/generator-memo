@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Memorandum KIA-WT</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- CDN Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+        }
+
+        /* Styling Lembar Ukuran A4 */
+        .page-a4 {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm;
+            background: white;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            /*justify-content: space-between;*/
+            color: #000;
+        }
+
+        /* Aturan Khusus Cetak / Print ke PDF */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+
+            body {
+                background: white !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            .print-area {
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
+                background: white !important;
+            }
+
+            .page-a4 {
+                width: 210mm !important;
+                height: 297mm !important;
+                padding: 20mm !important;
+                box-shadow: none !important;
+                border: none !important;
+                page-break-after: always;
+                box-sizing: border-box;
+            }
+        }
+    </style>
+</head>
+
+<body class="h-screen flex flex-col md:flex-row overflow-hidden bg-slate-100">
+
+    <!-- ==================== KOLOM KIRI: FORM INPUT DATA ==================== -->
+    <div
+        class="no-print w-full md:w-1/2 lg:w-5/12 h-full bg-white border-r border-slate-200 flex flex-col shadow-xl z-10">
+        <!-- Header Panel Controls -->
+        <div class="p-4 border-b border-slate-700 bg-slate-900 text-white flex justify-between items-center">
+            <div>
+                <h1 class="text-base font-bold tracking-wide">Memorandum Generator</h1>
+                <p class="text-xs text-slate-400">Sistem Pembuatan Memo Resmi KIA-WT</p>
+            </div>
+            <span class="bg-blue-600 text-[11px] px-2.5 py-1 rounded-full font-semibold">Format A4</span>
+        </div>
+
+        <!-- Form Fields Scrollable -->
+        <div class="flex-1 overflow-y-auto p-4 space-y-4">
+
+            <!-- Notifikasi Toast -->
+            <div id="toast"
+                class="hidden p-3 bg-emerald-100 border border-emerald-400 text-emerald-800 text-xs rounded-lg">
+                ✓ Data draft berhasil disimpan di browser!
+            </div>
+
+            <!-- 1. Header Surat & Pilihan Perihal -->
+            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-3">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500">1. Informasi Surat</h2>
+
+                <div class="grid grid-cols-2 gap-2.5">
+                    <div>
+                        <label class="block text-[11px] font-medium text-slate-700 mb-1">Nomor Memo</label>
+                        <input type="text" id="inputNo"
+                            class="w-full text-xs p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-medium text-slate-700 mb-1">Tanggal</label>
+                        <input type="date" id="inputTanggal"
+                            class="w-full text-xs p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2.5">
+                    <div>
+                        <label class="block text-[11px] font-medium text-slate-700 mb-1">Kepada (To)</label>
+                        <input type="text" id="inputKepada" value="PGA Mgr. (Bp. Eko R.)"
+                            class="w-full text-xs p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-medium text-slate-700 mb-1">Dari (From)</label>
+                        <select id="inputDari"
+                            class="w-full text-xs p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
+                            <option value="SI. Plant KIA-WT">SI. Plant KIA-WT</option>
+                            <option value="Manager Plant KIA-WT">Manager Plant KIA-WT</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-semibold text-blue-700 mb-1">Jenis Perihal / Template
+                        Memo</label>
+                    <select id="inputPerihal"
+                        class="w-full text-xs p-2.5 border-2 border-blue-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-blue-50 font-medium text-slate-800">
+                        <option value="status">Perubahan Status Personil</option>
+                        <option value="gaji">Pembayaran Kekurangan Gaji</option>
+                        <option value="jadwal">Perubahan Jadwal Kerja</option>
+                        <option value="barang">Permintaan Barang / Fasilitas</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- 2. Form Dinamis Sesuai Perihal -->
+            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-3">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500" id="titleFormDinamis">2. Detail
+                    Data Perihal</h2>
+
+                <!-- Form A: Perubahan Status Personil -->
+                <div id="formStatus" class="space-y-2.5">
+                    <div>
+                        <label class="block text-[11px] font-medium text-slate-700 mb-1">Section / Bagian</label>
+                        <select id="statusSection" class="w-full text-xs p-2 border border-slate-300 rounded bg-white">
+                            <option value="Press">Press</option>
+                            <option value="Body Preparation">Body Preparation</option>
+                            <option value="Kiln">Kiln</option>
+                            <option value="Glaze Preparation">Glaze Preparation</option>
+                            <option value="Glazing Line">Glazing Line</option>
+                            <option value="Sortir Packing">Sortir Packing</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-medium text-slate-700 mb-1">Nama Personil</label>
+                            <input type="text" id="statusNama" value="Agung Munandar"
+                                class="w-full text-xs p-2 border border-slate-300 rounded">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-medium text-slate-700 mb-1">NIK</label>
+                            <input type="text" id="statusNik" value="082492"
+                                class="w-full text-xs p-2 border border-slate-300 rounded">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-medium text-slate-700 mb-1">Status Awal</label>
+                            <input type="text" id="statusAwal" value="Operator Press"
+                                class="w-full text-xs p-2 border border-slate-300 rounded">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-medium text-slate-700 mb-1">Status Baru</label>
+                            <input type="text" id="statusBaru" value="Foreman Press"
+                                class="w-full text-xs p-2 border border-slate-300 rounded">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-medium text-slate-700 mb-1">Tanggal Efektif</label>
+                        <input type="text" id="statusEffective" value="21 October 2026"
+                            class="w-full text-xs p-2 border border-slate-300 rounded">
+                    </div>
+                </div>
+
+                <!-- Form B & C: Tabel Dinamis (Gaji & Jadwal) -->
+                <div id="formTabel" class="hidden space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-semibold text-slate-700">Daftar Karyawan</span>
+                        <button type="button" id="btnAddRow"
+                            class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 rounded font-medium transition">+
+                            Tambah Baris</button>
+                    </div>
+                    <div id="tableInputsContainer" class="space-y-2.5 max-h-60 overflow-y-auto pr-1">
+                        <!-- Baris di-generate via JS -->
+                    </div>
+                </div>
+
+                <!-- Form D: Permintaan Barang -->
+                <div id="formBarang" class="hidden space-y-2.5">
+                    <div>
+                        <label class="block text-[11px] font-medium text-slate-700 mb-1">Judul Permintaan /
+                            Perihal</label>
+                        <input type="text" id="barangJudulPerihal"
+                            value="Permintaan Komputer untuk Spv. Body Preparation"
+                            class="w-full text-xs p-2 border border-slate-300 rounded">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-medium text-slate-700 mb-1">Isi Surat Permintaan</label>
+                        <textarea id="barangIsiPesan" rows="5"
+                            class="w-full text-xs p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none resize-y">Untuk menunjang aktivitas administrasi data kontrol operasional harian dan kegiatan focus improvement di bagian body preparation, maka dengan ini diajukan pengadaan 1 unit komputer yang akan dipergunakan oleh Supervisor Body Preparation & Press plant wall tile.</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Pengaturan Tanda Tangan Dinamis -->
+            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-3">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500">3. Penandatangan (Pengesahan)</h2>
+                <div id="ttdSelectorsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <!-- Dropdown TTD di-generate via JS -->
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Panel Tombol Aksi -->
+        <div class="p-3.5 border-t border-slate-200 bg-slate-100 flex gap-2.5">
+            <button id="btnSave"
+                class="flex-1 py-2 px-3 bg-slate-700 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg shadow transition flex items-center justify-center gap-1.5">
+                💾 Simpan Draft
+            </button>
+            <button id="btnPrint"
+                class="flex-1 py-2 px-3 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow transition flex items-center justify-center gap-1.5">
+                🖨️ Cetak / PDF
+            </button>
+        </div>
+    </div>
+
+
+    <!-- ==================== KOLOM KANAN: LIVE PREVIEW KERTAS A4 ==================== -->
+    <div
+        class="print-area w-full md:w-1/2 lg:w-7/12 h-full overflow-y-auto p-4 md:p-8 flex justify-center items-start bg-slate-300">
+
+        <!-- Dokumen Kertas A4 -->
+        <div class="page-a4 text-black leading-relaxed font-sans text-sm border border-slate-300">
+
+            <!-- Bagian Header Memo -->
+            <div>
+                <div class="text-center mb-6">
+                    <h1
+                        class="text-2xl font-bold tracking-widest text-black uppercase underline decoration-2 underline-offset-4">
+                        MEMORANDUM</h1>
+                </div>
+
+                <!-- Informasi Header Surat -->
+                <div class="border-t-2 border-b-2 border-black py-2.5 my-3 space-y-1.5 text-xs md:text-sm">
+                    <div class="flex justify-between items-start">
+                        <div class="flex w-2/3">
+                            <span class="w-16 font-semibold">No</span>
+                            <span class="mr-2">:</span>
+                            <span id="prevNo" class="font-medium"></span>
+                        </div>
+                        <div class="flex w-1/3 justify-end">
+                            <span class="font-semibold mr-2">Tanggal :</span>
+                            <span id="prevTanggal"></span>
+                        </div>
+                    </div>
+
+                    <div class="flex">
+                        <span class="w-16 font-semibold">Kepada</span>
+                        <span class="mr-2">:</span>
+                        <span id="prevKepada"></span>
+                    </div>
+
+                    <div class="flex">
+                        <span class="w-16 font-semibold">Dari</span>
+                        <span class="mr-2">:</span>
+                        <span id="prevDari"></span>
+                    </div>
+
+                    <div class="flex">
+                        <span class="w-16 font-semibold">Perihal</span>
+                        <span class="mr-2">:</span>
+                        <span id="prevPerihal" class="font-bold underline"></span>
+                    </div>
+                </div>
+
+                <!-- Garis Pemisah Tebal Hitam -->
+                <div class="w-full h-1 bg-black mb-5"></div>
+
+                <!-- Isi Pesan & Konten Utama -->
+                <div class="space-y-4 text-justify px-1">
+                    <p class="font-medium">Dengan Hormat,</p>
+
+                    <!-- Pembuka Kalimat -->
+                    <p id="prevKalimatPembuka" class="leading-relaxed"></p>
+
+                    <!-- Area Konten Dinamis (Detail / Tabel) -->
+                    <div id="prevContentDinamis" class="my-4"></div>
+
+                    <!-- Penutup Kalimat -->
+                    <p id="prevKalimatPenutup" class="leading-relaxed"></p>
+                </div>
+            </div>
+
+            <!-- Bagian Pengesahan / Tanda Tangan -->
+            <div class="mt-16 pt-4">
+                <div id="prevTtdGrid" class="grid gap-4 text-center">
+                    <!-- Kolom TTD di-render otomatis via JS -->
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==================== LOGIKA JAVASCRIPT ==================== -->
+    <script>
+        // Data Pejabat / Personel Tanda Tangan
+        const listPersonel = [
+            { nama: "Adih Hidayat", jabatan: "SI. Plant KIA-WT" },
+            { nama: "Eko Raharjo", jabatan: "Head Of HRBP" },
+            { nama: "Ibrohim Aji", jabatan: "Mgr. Plant KIA-WT" },
+            { nama: "Gunarso", jabatan: "Production Director" },
+            { nama: "Kairawee Teetuan", jabatan: "Operations Director" }
+        ];
+
+        // State Data Tabel Dinamis
+        let dataTabelGaji = [
+            { nama: "Diki Azis", nik: "241081", bagian: "KIA - Spv. Shift / Korlap Grup B W", keterangan: "SPLO 07 SEPTEMBER 2026 - 13 September 2026" },
+            { nama: "ORIZA CHOIRUNNISA", nik: "250425", bagian: "KIA - Operator Sortir Packing WT", keterangan: "SPLO 07 SEPTEMBER 2026 - 13 September 2027" }
+        ];
+
+        let dataTabelJadwal = [
+            { nama: "Bahri", nik: "082612", lama: "Sortir Grup A", baru: "Klin Grup B", effective: "21/08/2026" },
+            { nama: "Suyatno", nik: "082294", lama: "Glazing Grup C", baru: "Glazing Grup B", effective: "21/08/2026" },
+            { nama: "Anang", nik: "082251", lama: "Klin Grup B", baru: "KliIn Grup A", effective: "21/08/2026" },
+            { nama: "AGUNG MUNANDAR", nik: "082492", lama: "Press Grup B", baru: "Press Grup C", effective: "21/08/2026 text" }
+        ];
+
+        // Format Bulan Romawi
+        function getBulanRomawi(bulanIndex) {
+            const romawi = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
+            return romawi[bulanIndex] || "I";
+        }
+
+        // Format Tanggal Indonesia
+        function formatTanggalIndo(dateString) {
+            if (!dateString) return "";
+            const date = new Date(dateString);
+            const listBulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agt", "Sept", "Okt", "Nov", "Des"];
+            return `${String(date.getDate()).padStart(2, '0')}-${listBulan[date.getMonth()]}-${date.getFullYear()}`;
+        }
+
+        // Inisialisasi Saat Halaman Dimuat
+        window.addEventListener('DOMContentLoaded', () => {
+            const today = new Date();
+            const tahunSekarang = today.getFullYear();
+            const bulanRomawi = getBulanRomawi(today.getMonth());
+
+            // Ambil nomor urut terakhir dari localStorage, jika belum ada mulai dari 1
+            let nomorUrut = localStorage.getItem('kia_memo_counter');
+            if (!nomorUrut) {
+                nomorUrut = 1;
+            } else {
+                nomorUrut = parseInt(nomorUrut);
+            }
+
+            // Format menjadi 3 digit (contoh: 001, 002, dst)
+            const formatNoUrut = String(nomorUrut).padStart(2, '0');
+            document.getElementById('inputNo').value = `${formatNoUrut} / SI.KIA-WT / ${bulanRomawi} / ${tahunSekarang}`;
+
+            document.getElementById('inputTanggal').valueAsDate = today;
+
+            // Event Listener Pilihan Perihal
+            document.getElementById('inputPerihal').addEventListener('change', onPerihalChange);
+
+            // Event Listeners Input Utama
+            ['inputNo', 'inputTanggal', 'inputKepada', 'inputDari', 'statusSection', 'statusNama', 'statusNik', 'statusAwal', 'statusBaru', 'statusEffective', 'barangJudulPerihal', 'barangIsiPesan'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('input', renderPreview);
+            });
+
+            document.getElementById('btnAddRow').addEventListener('click', () => {
+                const jenis = document.getElementById('inputPerihal').value;
+                if (jenis === 'gaji') {
+                    dataTabelGaji.push({ nama: "", nik: "", bagian: "", keterangan: "" });
+                } else if (jenis === 'jadwal') {
+                    dataTabelJadwal.push({ nama: "", nik: "", lama: "", baru: "", effective: "" });
+                }
+                renderFormInputs();
+                renderPreview();
+            });
+
+            document.getElementById('btnSave').addEventListener('click', saveDraft);
+            document.getElementById('btnPrint').addEventListener('click', () => window.print());
+
+            // Render Awal
+            onPerihalChange();
+        });
+
+        // Handler Pergantian Jenis Perihal
+        function onPerihalChange() {
+            const jenis = document.getElementById('inputPerihal').value;
+
+            // Sembunyikan semua section form
+            document.getElementById('formStatus').classList.add('hidden');
+            document.getElementById('formTabel').classList.add('hidden');
+            document.getElementById('formBarang').classList.add('hidden');
+
+            if (jenis === 'status') {
+                document.getElementById('formStatus').classList.remove('hidden');
+            } else if (jenis === 'gaji' || jenis === 'jadwal') {
+                document.getElementById('formTabel').classList.remove('hidden');
+            } else if (jenis === 'barang') {
+                document.getElementById('formBarang').classList.remove('hidden');
+            }
+
+            renderFormInputs();
+            renderTtdSelectors();
+            renderPreview();
+        }
+
+        // Render Form Input Tabel Dinamis
+        function renderFormInputs() {
+            const jenis = document.getElementById('inputPerihal').value;
+            const container = document.getElementById('tableInputsContainer');
+            container.innerHTML = "";
+
+            if (jenis === 'gaji') {
+                dataTabelGaji.forEach((row, idx) => {
+                    const div = document.createElement('div');
+                    div.className = "p-2.5 bg-white rounded border border-slate-200 text-xs space-y-1.5 relative";
+                    div.innerHTML = `
+                        <div class="flex justify-between font-semibold text-slate-500 border-b pb-1">
+                            <span>Karyawan #${idx + 1}</span>
+                            ${dataTabelGaji.length > 1 ? `<button type="button" onclick="removeRow('gaji', ${idx})" class="text-red-500 hover:text-red-700">Hapus</button>` : ''}
+                        </div>
+                        <div class="grid grid-cols-2 gap-1.5">
+                            <input type="text" placeholder="Nama Karyawan" value="${row.nama}" oninput="updateRowData('gaji', ${idx}, 'nama', this.value)" class="p-1 border rounded">
+                            <input type="text" placeholder="NIK" value="${row.nik}" oninput="updateRowData('gaji', ${idx}, 'nik', this.value)" class="p-1 border rounded">
+                        </div>
+                        <input type="text" placeholder="Bagian / Jabatan" value="${row.bagian}" oninput="updateRowData('gaji', ${idx}, 'bagian', this.value)" class="w-full p-1 border rounded">
+                        <input type="text" placeholder="Keterangan Lembur" value="${row.keterangan}" oninput="updateRowData('gaji', ${idx}, 'keterangan', this.value)" class="w-full p-1 border rounded">
+                    `;
+                    container.appendChild(div);
+                });
+            } else if (jenis === 'jadwal') {
+                dataTabelJadwal.forEach((row, idx) => {
+                    const div = document.createElement('div');
+                    div.className = "p-2.5 bg-white rounded border border-slate-200 text-xs space-y-1.5 relative";
+                    div.innerHTML = `
+                        <div class="flex justify-between font-semibold text-slate-500 border-b pb-1">
+                            <span>Karyawan #${idx + 1}</span>
+                            ${dataTabelJadwal.length > 1 ? `<button type="button" onclick="removeRow('jadwal', ${idx})" class="text-red-500 hover:text-red-700">Hapus</button>` : ''}
+                        </div>
+                        <div class="grid grid-cols-2 gap-1.5">
+                            <input type="text" placeholder="Nama Karyawan" value="${row.nama}" oninput="updateRowData('jadwal', ${idx}, 'nama', this.value)" class="p-1 border rounded">
+                            <input type="text" placeholder="NIK" value="${row.nik}" oninput="updateRowData('jadwal', ${idx}, 'nik', this.value)" class="p-1 border rounded">
+                        </div>
+                        <div class="grid grid-cols-2 gap-1.5">
+                            <input type="text" placeholder="Jadwal Lama" value="${row.lama}" oninput="updateRowData('jadwal', ${idx}, 'lama', this.value)" class="p-1 border rounded">
+                            <input type="text" placeholder="Jadwal Baru" value="${row.baru}" oninput="updateRowData('jadwal', ${idx}, 'baru', this.value)" class="p-1 border rounded">
+                        </div>
+                        <input type="text" placeholder="Effective Date" value="${row.effective}" oninput="updateRowData('jadwal', ${idx}, 'effective', this.value)" class="w-full p-1 border rounded">
+                    `;
+                    container.appendChild(div);
+                });
+            }
+        }
+
+        function updateRowData(jenis, idx, field, val) {
+            if (jenis === 'gaji') dataTabelGaji[idx][field] = val;
+            if (jenis === 'jadwal') dataTabelJadwal[idx][field] = val;
+            renderPreview();
+        }
+
+        function removeRow(jenis, idx) {
+            if (jenis === 'gaji') dataTabelGaji.splice(idx, 1);
+            if (jenis === 'jadwal') dataTabelJadwal.splice(idx, 1);
+            renderFormInputs();
+            renderPreview();
+        }
+
+        // Render Dropdown Pemilihan Tanda Tangan
+        function renderTtdSelectors() {
+            const jenis = document.getElementById('inputPerihal').value;
+            const container = document.getElementById('ttdSelectorsContainer');
+            container.innerHTML = "";
+
+            let configs = [];
+            if (jenis === 'status') { // 4 TTD
+                configs = [
+                    { label: "1. Pengaju (Kiri)", default: "Ibrohim Aji" },
+                    { label: "2. Mengetahui", default: "Eko Raharjo" },
+                    { label: "3. Menyetujui 1", default: "Gunarso" },
+                    { label: "4. Menyetujui 2 (Kanan)", default: "Kairawee Teetuan" }
+                ];
+            } else if (jenis === 'gaji' || jenis === 'barang') { // 3 TTD
+                configs = [
+                    { label: "1. Dibuat Oleh", default: "Adih Hidayat" },
+                    { label: "2. Mengetahui", default: "Ibrohim Aji" },
+                    { label: "3. Menyetujui", default: "Kairawee Teetuan" }
+                ];
+            } else if (jenis === 'jadwal') { // 2 TTD
+                configs = [
+                    { label: "1. Dibuat Oleh", default: "Adih Hidayat" },
+                    { label: "2. Menyetujui", default: "Ibrohim Aji" }
+                ];
+            }
+
+            configs.forEach((cfg, idx) => {
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <label class="block text-[11px] font-medium text-slate-700 mb-1">${cfg.label}</label>
+                    <select id="ttdSel_${idx}" class="w-full text-xs p-2 border border-slate-300 rounded bg-white">
+                        ${listPersonel.map(p => `<option value="${p.nama}" ${p.nama === cfg.default ? 'selected' : ''}>${p.nama}</option>`).join('')}
+                    </select>
+                `;
+                container.appendChild(div);
+                document.getElementById(`ttdSel_${idx}`).addEventListener('change', renderPreview);
+            });
+        }
+
+        // Render Tampilan Utama Memo A4
+        function renderPreview() {
+            const jenis = document.getElementById('inputPerihal').value;
+
+            // Header
+            document.getElementById('prevNo').textContent = document.getElementById('inputNo').value;
+            document.getElementById('prevTanggal').textContent = formatTanggalIndo(document.getElementById('inputTanggal').value);
+            document.getElementById('prevKepada').textContent = document.getElementById('inputKepada').value;
+            document.getElementById('prevDari').textContent = document.getElementById('inputDari').value;
+
+            const elKalimatPembuka = document.getElementById('prevKalimatPembuka');
+            const elKalimatPenutup = document.getElementById('prevKalimatPenutup');
+            const elContent = document.getElementById('prevContentDinamis');
+
+            // Render Konten Perihal
+            if (jenis === 'status') {
+                const sec = document.getElementById('statusSection').value;
+                document.getElementById('prevPerihal').textContent = `Perubahan Status Personil ${sec}`;
+
+                elKalimatPembuka.textContent = `Sehubungan dengan adanya kekosongan Foreman Shift di section ${sec}. Maka dengan ini kami ajukan perubahan status nama personil di bawah ini:`;
+
+                elContent.innerHTML = `
+                    <div class="my-6 pl-4 space-y-2 text-sm font-medium">
+                        <div class="grid grid-cols-12"><span class="col-span-3 font-semibold">Nama</span><span class="col-span-9">: ${document.getElementById('statusNama').value}</span></div>
+                        <div class="grid grid-cols-12"><span class="col-span-3 font-semibold">NIK</span><span class="col-span-9">: ${document.getElementById('statusNik').value}</span></div>
+                        <div class="grid grid-cols-12"><span class="col-span-3 font-semibold">Status Awal</span><span class="col-span-9">: ${document.getElementById('statusAwal').value}</span></div>
+                        <div class="grid grid-cols-12"><span class="col-span-3 font-semibold">Status Baru</span><span class="col-span-9">: ${document.getElementById('statusBaru').value}</span></div>
+                        <div class="grid grid-cols-12"><span class="col-span-3 font-semibold">Effective</span><span class="col-span-9">: ${document.getElementById('statusEffective').value}</span></div>
+                    </div>
+                `;
+
+                elKalimatPenutup.textContent = "Demikian kami sampaikan, atas perhatian dan kerjasamanya kami ucapkan terima kasih.";
+
+            } else if (jenis === 'gaji') {
+                document.getElementById('prevPerihal').textContent = "Pembayaran kekurangan Gaji";
+
+                elKalimatPembuka.textContent = "Bersama ini kami informasikan bahwa karyawan Outshorcing tersebut dibawah ini ada yang belum mendapatkan Pembayaran Lembur dengan rincian Sebagai Berkut :";
+
+                let tableRowsHtml = dataTabelGaji.map((r, i) => `
+                    <tr class="border-b border-black text-center">
+                        <td class="border-r border-black p-2">${i + 1}</td>
+                        <td class="border-r border-black p-2 text-left font-medium">${r.nama}</td>
+                        <td class="border-r border-black p-2">${r.nik}</td>
+                        <td class="border-r border-black p-2 text-left">${r.bagian}</td>
+                        <td class="p-2 text-left">${r.keterangan}</td>
+                    </tr>
+                `).join('');
+
+                elContent.innerHTML = `
+                    <table class="w-full border-2 border-black text-xs my-4">
+                        <thead>
+                            <tr class="border-b-2 border-black bg-slate-100 font-bold text-center">
+                                <th class="border-r border-black p-2 w-8">No</th>
+                                <th class="border-r border-black p-2">Nama Karyawan</th>
+                                <th class="border-r border-black p-2 w-20">Nik</th>
+                                <th class="border-r border-black p-2">Bagian</th>
+                                <th class="p-2">Yang belum terbayar Lembur</th>
+                            </tr>
+                        </thead>
+                        <tbody>${tableRowsHtml}</tbody>
+                    </table>
+                `;
+
+                elKalimatPenutup.innerHTML = "Sehubungan dengan hal tersebut mohon Kekurangan Gaji Personil tersebut di atas dibayarkan di penggajian Bulan Berikutnya.<br><br>Demikian atas perhatiannya dan kerjasamanya kami sampaikan,terima kasih.";
+
+            } else if (jenis === 'jadwal') {
+                document.getElementById('prevPerihal').textContent = "Perubahan Jadwal Kerja";
+
+                elKalimatPembuka.textContent = "Berikut kami informasikan bahwa ada perubahan jadwal kerja personil Plant KIA-WT dengan data personil dibawah ini :";
+
+                let tableRowsHtml = dataTabelJadwal.map((r, i) => `
+                    <tr class="border-b border-black text-center">
+                        <td class="border-r border-black p-1.5">${i + 1}</td>
+                        <td class="border-r border-black p-1.5 text-left font-medium">${r.nama}</td>
+                        <td class="border-r border-black p-1.5">${r.nik}</td>
+                        <td class="border-r border-black p-1.5">${r.lama}</td>
+                        <td class="border-r border-black p-1.5">${r.baru}</td>
+                        <td class="p-1.5">${r.effective}</td>
+                    </tr>
+                `).join('');
+
+                elContent.innerHTML = `
+                    <table class="w-full border-2 border-black text-xs my-4">
+                        <thead>
+                            <tr class="border-b-2 border-black bg-slate-100 font-bold text-center">
+                                <th class="border-r border-black p-1.5 w-7">No</th>
+                                <th class="border-r border-black p-1.5">Nama Karyawan</th>
+                                <th class="border-r border-black p-1.5 w-16">Nik</th>
+                                <th class="border-r border-black p-1.5">Jadwal Kerja Lama</th>
+                                <th class="border-r border-black p-1.5">Jadwal Kerja Baru</th>
+                                <th class="p-1.5 w-20">Efective</th>
+                            </tr>
+                        </thead>
+                        <tbody>${tableRowsHtml}</tbody>
+                    </table>
+                `;
+
+                elKalimatPenutup.textContent = "";
+
+            } else if (jenis === 'barang') {
+                const perihalJudul = document.getElementById('barangJudulPerihal').value;
+                document.getElementById('prevPerihal').textContent = perihalJudul;
+
+                elKalimatPembuka.textContent = document.getElementById('barangIsiPesan').value;
+                elContent.innerHTML = "";
+                elKalimatPenutup.textContent = "Demikian surat permohonan ini Saya buat, terima kasih atas perhatiannya.";
+            }
+
+            // Render Tanda Tangan Grid
+            renderTtdGrid(jenis);
+        }
+
+        // Render Kolom TTD di Kertas A4
+        function renderTtdGrid(jenis) {
+            const grid = document.getElementById('prevTtdGrid');
+            grid.innerHTML = "";
+
+            let count = 2;
+            let headers = [];
+
+            if (jenis === 'status') {
+                count = 4;
+                headers = ["", "Mengetahui,", "Menyetujui,", ""];
+            } else if (jenis === 'gaji' || jenis === 'barang') {
+                count = 3;
+                headers = ["Dibuat Oleh,", "Mengetahui,", "Menyetujui,"];
+            } else if (jenis === 'jadwal') {
+                count = 2;
+                headers = ["Dibuat Oleh", "Menyetujui"];
+            }
+
+            grid.className = `grid grid-cols-${count} gap-2 text-center text-xs md:text-sm`;
+
+            for (let i = 0; i < count; i++) {
+                const selEl = document.getElementById(`ttdSel_${i}`);
+                const selectedNama = selEl ? selEl.value : listPersonel[0].nama;
+                const foundPersonel = listPersonel.find(p => p.nama === selectedNama) || { nama: selectedNama, jabatan: "" };
+
+                const col = document.createElement('div');
+                col.className = "flex flex-col justify-between h-48";
+                col.innerHTML = `
+                    <p class="font-medium">${headers[i] || ""}</p>
+                    <div>
+                        <p class="font-bold underline uppercase">${foundPersonel.nama}</p>
+                        <p class="text-xs mt-0.5">${foundPersonel.jabatan}</p>
+                    </div>
+                `;
+                grid.appendChild(col);
+            }
+        }
+
+ // Simpan Draft, Naikkan Nomor Urut, & Kirim ke Supabase
+        async function saveDraft() {
+            const noMemo = document.getElementById('inputNo').value;
+            const tanggal = document.getElementById('inputTanggal').value;
+            const kepada = document.getElementById('inputKepada').value;
+            const dari = document.getElementById('inputDari').value;
+            const jenisPerihal = document.getElementById('inputPerihal').value;
+            const teksPerihal = document.getElementById('prevPerihal').textContent;
+
+            const draft = {
+                no: noMemo,
+                tanggal: tanggal,
+                kepada: kepada,
+                dari: dari,
+                perihal: teksPerihal, // Teks perihal lengkap
+                jenis: jenisPerihal,   // Kode kategori (status/gaji/dll)
+                dataGaji: dataTabelGaji,
+                dataJadwal: dataTabelJadwal
+            };
+
+            // 1. Simpan ke LocalStorage browser
+            localStorage.setItem('memo_draft_v2', JSON.stringify(draft));
+
+            // 2. KIRIM DATA KE SUPABASE (Bagian ini yang sebelumnya kurang)
+            await simpanKeSupabase(draft);
+
+            // 3. Ambil nomor saat ini dari input, lalu naikkan counter untuk memo berikutnya
+            let currentNoStr = noMemo.split('/')[0].trim();
+            let currentNoInt = parseInt(currentNoStr);
+            if (!isNaN(currentNoInt)) {
+                // Simpan nomor urut berikutnya ke localStorage
+                localStorage.setItem('kia_memo_counter', currentNoInt + 1);
+            }
+
+            const toast = document.getElementById('toast');
+            toast.textContent = "✓ Draft tersimpan ke Cloud & nomor memo otomatis naik!";
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 3500);
+        }
+
+        // Inisialisasi Supabase Client (URL bersih tanpa /rest/v1/memos)
+        const SUPABASE_URL = 'https://akgjkgkgfzdpfoyfmxno.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFrZ2prZ2tnZnpkcGZveWZteG5vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI1NDU0NDEsImV4cCI6MjEwODEyMTQ0MX0.akKCYFg_9OY77CDIrCKVYQAzCFxq-vIO0XmqP7yUCXw';
+        
+        let supabaseClient = null;
+        try {
+            supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } catch (e) {
+            console.error("Gagal menginisialisasi Supabase:", e);
+        }
+
+        // Fungsi Simpan Memo ke Supabase
+        async function simpanKeSupabase(dataMemo) {
+            if (!supabaseClient) {
+                console.error("Supabase client belum siap.");
+                return;
+            }
+
+            const { data, error } = await supabaseClient
+                .from('memos')
+                .insert([
+                    {
+                        no_memo: dataMemo.no,
+                        tanggal: dataMemo.tanggal,
+                        kepada: dataMemo.kepada,
+                        dari: dataMemo.dari,
+                        perihal: dataMemo.perihal,
+                        jenis_perihal: dataMemo.jenis
+                    }
+                ]);
+
+            if (error) {
+                console.error('Gagal menyimpan ke database:', error.message);
+                alert('Gagal menyimpan ke database: ' + error.message);
+            } else {
+                console.log('Berhasil disimpan ke Supabase!', data);
+            }
+        }
+    </script>
+</body>
+
+</html>
