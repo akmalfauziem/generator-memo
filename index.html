@@ -30,9 +30,7 @@
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
             margin: 0 auto;
             box-sizing: border-box;
-            display: block;
-            flex-direction: column;
-            justify-content: space-between;
+            display: block; /* Mengalir alami agar TTD tidak terpental terlalu jauh */
             color: #000;
         }
 
@@ -140,9 +138,7 @@
 
                     <!-- 1. Informasi Surat -->
                     <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-3">
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1">
-                            <span>1. Informasi Surat</span>
-                        </h3>
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600">1. Informasi Surat</h3>
 
                         <div class="grid grid-cols-2 gap-2.5">
                             <div>
@@ -338,7 +334,7 @@
                     </div>
 
                     <!-- Bottom Section (Tanda Tangan) -->
-                    <div class="mt-12 pt-2">
+                    <div class="mt-8 pt-2">
                         <div id="prevTtdGrid" class="grid gap-4 text-center"></div>
                     </div>
 
@@ -400,8 +396,8 @@
                                     <th class="p-3">No. Memo</th>
                                     <th class="p-3">Tanggal</th>
                                     <th class="p-3">Kepada</th>
-                                    <th class="p-3">Dari</th>
                                     <th class="p-3">Perihal</th>
+                                    <th class="p-3">Status TTD</th>
                                     <th class="p-3">Waktu Simpan</th>
                                     <th class="p-3 text-center">Aksi</th>
                                 </tr>
@@ -468,6 +464,7 @@
         function formatTanggalIndo(dateString) {
             if (!dateString) return "";
             const date = new Date(dateString);
+            if (isNaN(date.getTime())) return dateString;
             const listBulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agt", "Sept", "Okt", "Nov", "Des"];
             return `${String(date.getDate()).padStart(2, '0')}-${listBulan[date.getMonth()]}-${date.getFullYear()}`;
         }
@@ -791,7 +788,7 @@
                 const foundPersonel = listPersonel.find(p => p.nama === selectedNama) || { nama: selectedNama, jabatan: "" };
 
                 const col = document.createElement('div');
-                col.className = "flex flex-col justify-between h-48";
+                col.className = "flex flex-col justify-between h-32";
                 col.innerHTML = `
                     <p class="font-medium">${headers[i] || ""}</p>
                     <div>
@@ -804,7 +801,7 @@
         }
 
         // Simpan Draft ke Supabase & LocalStorage
-async function saveDraft() {
+        async function saveDraft() {
             const noMemo = document.getElementById('inputNo').value;
             const tanggal = document.getElementById('inputTanggal').value;
             const kepada = document.getElementById('inputKepada').value;
@@ -812,20 +809,20 @@ async function saveDraft() {
             const jenisPerihal = document.getElementById('inputPerihal').value;
             const teksPerihal = document.getElementById('prevPerihal').textContent;
 
-            // Variabel penampung data dinamai 'draft'
             const draft = {
                 no: noMemo,
                 tanggal: tanggal,
                 kepada: kepada,
                 dari: dari,
                 perihal: teksPerihal,
-                jenis: jenisPerihal
+                jenis: jenisPerihal,
+                status: 'Belum Selesai' // Default status saat baru disimpan
             };
 
             // 1. Simpan ke LocalStorage browser
             localStorage.setItem('memo_draft_v2', JSON.stringify(draft));
 
-            // 2. Simpan ke Supabase (Kirim variabel 'draft' dengan benar)
+            // 2. Simpan ke Supabase
             if (supabaseClient) {
                 try {
                     const { data, error } = await supabaseClient
@@ -838,6 +835,7 @@ async function saveDraft() {
                                 dari: draft.dari,
                                 perihal: draft.perihal,
                                 jenis_perihal: draft.jenis,
+                                status: draft.status,
                                 created_at: new Date().toISOString()
                             }
                         ]);
@@ -845,10 +843,11 @@ async function saveDraft() {
                     if (error) {
                         console.error('Gagal menyimpan ke database:', error.message);
                         alert('Gagal menyimpan ke database: ' + error.message);
-                        return; // Hentikan jika gagal agar counter tidak naik keliru
+                        return;
                     }
                 } catch (err) {
                     console.error("Exception saat simpan ke Supabase:", err);
+                    alert("Terjadi kesalahan koneksi ke Supabase.");
                     return;
                 }
             }
@@ -860,10 +859,7 @@ async function saveDraft() {
                 localStorage.setItem('kia_memo_counter', currentNoInt + 1);
             }
 
-            const toast = document.getElementById('toast');
-            toast.textContent = "✓ Data berhasil disimpan ke Cloud & counter nomor bertambah!";
-            toast.classList.remove('hidden');
-            setTimeout(() => toast.classList.add('hidden'), 3500);
+            showToast("✓ Data berhasil disimpan ke Cloud & counter nomor bertambah!");
         }
 
         // Fetch Riwayat Memo dari Supabase
@@ -910,7 +906,7 @@ async function saveDraft() {
             document.getElementById('statMemoBulanIni').textContent = countThisMonth;
         }
 
-        // Render Tabel Riwayat
+        // Render Tabel Riwayat (Disertai Toggle Switch Status Kapsul Hijau/Abu)
         function renderRiwayatTable(data) {
             const tbody = document.getElementById('riwayatTableBody');
             tbody.innerHTML = "";
@@ -925,23 +921,91 @@ async function saveDraft() {
                 tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
                 
                 const formattedCreatedAt = memo.created_at ? new Date(memo.created_at).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' }) : '-';
+                const isSelesai = memo.status === 'Memo Selesai' || memo.status === 'Selesai';
 
                 tr.innerHTML = `
                     <td class="p-3 font-bold text-slate-800">${memo.no_memo || '-'}</td>
                     <td class="p-3 font-medium">${formatTanggalIndo(memo.tanggal)}</td>
                     <td class="p-3">${memo.kepada || '-'}</td>
-                    <td class="p-3">${memo.dari || '-'}</td>
                     <td class="p-3 max-w-xs truncate font-semibold text-slate-700" title="${memo.perihal}">${memo.perihal || '-'}</td>
+                    <td class="p-3">
+                        <!-- TOGGLE BUTTON STATUS KAPSUL -->
+                        <button onclick="toggleStatus(${memo.id}, '${memo.status || 'Belum Selesai'}')" 
+                            title="Klik untuk mengubah status TTD"
+                            class="px-3 py-1 rounded-full text-[11px] font-bold transition-all flex items-center gap-1.5 shadow-sm border ${
+                                isSelesai 
+                                ? 'bg-emerald-950 border-emerald-700 text-emerald-400 hover:bg-emerald-900' 
+                                : 'bg-slate-100 border-slate-300 text-slate-500 hover:bg-slate-200'
+                            }">
+                            <span class="w-2 h-2 rounded-full ${isSelesai ? 'bg-emerald-400 animate-pulse' : 'bg-slate-400'}"></span>
+                            <span>${isSelesai ? 'Memo Selesai' : 'Belum Selesai'}</span>
+                        </button>
+                    </td>
                     <td class="p-3 text-slate-400 text-[11px]">${formattedCreatedAt}</td>
-                    <td class="p-3 text-center">
+                    <td class="p-3 text-center space-x-1">
                         <button onclick="loadMemoToEditor('${memo.no_memo}', '${memo.tanggal}', '${memo.kepada}', '${memo.dari}', '${memo.jenis_perihal}')" 
-                            class="px-2.5 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold rounded transition text-[11px]">
-                            👁️ Muat Ke Editor
+                            class="px-2 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold rounded transition text-[11px]">
+                            👁️ Muat
+                        </button>
+                        <button onclick="deleteMemo(${memo.id})" 
+                            class="px-2 py-1 bg-red-100 hover:bg-red-200 text-red-700 font-semibold rounded transition text-[11px]">
+                            🗑️ Hapus
                         </button>
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
+        }
+
+        // FUNGSI TOGGLE STATUS MEMO DI SUPABASE
+        async function toggleStatus(id, currentStatus) {
+            if (!supabaseClient) return;
+
+            const isCurrentSelesai = currentStatus === 'Memo Selesai' || currentStatus === 'Selesai';
+            const newStatus = isCurrentSelesai ? 'Belum Selesai' : 'Memo Selesai';
+
+            try {
+                const { error } = await supabaseClient
+                    .from('memos')
+                    .update({ status: newStatus })
+                    .eq('id', id);
+
+                if (error) {
+                    alert('Gagal mengupdate status: ' + error.message);
+                } else {
+                    // Update data lokal & render ulang tanpa reload penuh
+                    const found = rawRiwayatMemos.find(m => m.id === id);
+                    if (found) found.status = newStatus;
+                    renderRiwayatTable(rawRiwayatMemos);
+                }
+            } catch (err) {
+                console.error("Gagal mengupdate status:", err);
+            }
+        }
+
+        // Fungsi Hapus Memo dari Database Supabase
+        async function deleteMemo(id) {
+            if (!confirm("Apakah Anda yakin ingin menghapus memo ini dari database cloud?")) {
+                return;
+            }
+
+            if (!supabaseClient) return;
+
+            try {
+                const { error } = await supabaseClient
+                    .from('memos')
+                    .delete()
+                    .eq('id', id);
+
+                if (error) {
+                    alert('Gagal menghapus memo: ' + error.message);
+                } else {
+                    fetchRiwayatMemo();
+                }
+            } catch (err) {
+                console.error("Gagal menghapus:", err);
+                alert("Terjadi kesalahan saat menghapus data.");
+            }
         }
 
         // Filter Riwayat Memo dengan Search Box
