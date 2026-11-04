@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generator Memorandum KIA-WT</title>
-    
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -27,10 +27,10 @@
             min-height: 297mm;
             padding: 20mm;
             background: white;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
             margin: 0 auto;
             box-sizing: border-box;
-            display: block; /* Mengalir alami agar TTD tidak terpental terlalu jauh */
+            display: block;
             color: #000;
         }
 
@@ -79,7 +79,6 @@
     <!-- ==================== 1. TOP NAVBAR / HEADER ==================== -->
     <header class="no-print bg-slate-900 text-white flex-none z-20 border-b border-slate-800 shadow-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between py-2.5 sm:py-3 gap-2">
-            <!-- Logo & Title -->
             <div class="flex items-center space-x-3">
                 <div class="bg-blue-600 p-2 rounded-lg text-white font-black text-lg tracking-wider">KIA</div>
                 <div>
@@ -88,7 +87,6 @@
                 </div>
             </div>
 
-            <!-- Navigation Tabs & Badges -->
             <div class="flex items-center space-x-2 sm:space-x-4">
                 <nav class="flex bg-slate-800 p-1 rounded-xl text-xs font-semibold">
                     <button id="tabBtnGenerator" onclick="switchTab('generator')"
@@ -101,7 +99,6 @@
                     </button>
                 </nav>
 
-                <!-- Status Badges -->
                 <div class="hidden md:flex items-center space-x-2 text-[11px]">
                     <span class="bg-slate-800 border border-slate-700 px-2.5 py-1 rounded-full font-medium text-slate-300">Format: A4 Portrait</span>
                     <span id="badgeSupabase" class="bg-emerald-950 border border-emerald-700 text-emerald-400 px-2.5 py-1 rounded-full font-medium flex items-center gap-1">
@@ -121,7 +118,6 @@
 
             <!-- KOLOM KIRI: FORM INPUT (SCROLLABLE) -->
             <div class="no-print w-full md:w-1/2 lg:w-5/12 h-full bg-white border-r border-slate-200 flex flex-col shadow-xl z-10">
-                <!-- Header Control -->
                 <div class="p-3.5 border-b border-slate-200 bg-slate-50 flex justify-between items-center">
                     <h2 class="text-xs font-bold uppercase tracking-wider text-slate-600">Pengaturan Data Memo</h2>
                     <span class="text-[11px] text-slate-500 font-medium">Otomatis Sync ke Preview</span>
@@ -143,26 +139,22 @@
                         <div class="grid grid-cols-2 gap-2.5">
                             <div>
                                 <label class="block text-[11px] font-medium text-slate-700 mb-1">Nomor Memo</label>
-                                <input type="text" id="inputNo"
-                                    class="w-full text-xs p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                <input type="text" id="inputNo" class="w-full text-xs p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
                             </div>
                             <div>
                                 <label class="block text-[11px] font-medium text-slate-700 mb-1">Tanggal</label>
-                                <input type="date" id="inputTanggal"
-                                    class="w-full text-xs p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                <input type="date" id="inputTanggal" class="w-full text-xs p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
                             </div>
                         </div>
 
                         <div class="grid grid-cols-2 gap-2.5">
                             <div>
                                 <label class="block text-[11px] font-medium text-slate-700 mb-1">Kepada (To)</label>
-                                <input type="text" id="inputKepada" value="PGA Mgr. (Bp. Eko R.)"
-                                    class="w-full text-xs p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                <input type="text" id="inputKepada" value="PGA Mgr. (Bp. Eko R.)" class="w-full text-xs p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
                             </div>
                             <div>
                                 <label class="block text-[11px] font-medium text-slate-700 mb-1">Dari (From)</label>
-                                <select id="inputDari"
-                                    class="w-full text-xs p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
+                                <select id="inputDari" class="w-full text-xs p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
                                     <option value="SI. Plant KIA-WT">SI. Plant KIA-WT</option>
                                     <option value="Manager Plant KIA-WT">Manager Plant KIA-WT</option>
                                 </select>
@@ -171,8 +163,7 @@
 
                         <div>
                             <label class="block text-[11px] font-semibold text-blue-800 mb-1">Jenis Perihal / Template Memo</label>
-                            <select id="inputPerihal"
-                                class="w-full text-xs p-2.5 border-2 border-blue-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-blue-50/70 font-semibold text-slate-800">
+                            <select id="inputPerihal" class="w-full text-xs p-2.5 border-2 border-blue-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none bg-blue-50/70 font-semibold text-slate-800">
                                 <option value="status">Perubahan Status Personil</option>
                                 <option value="gaji">Pembayaran Kekurangan Gaji</option>
                                 <option value="jadwal">Perubahan Jadwal Kerja</option>
@@ -197,6 +188,10 @@
                                     <option value="Glazing Line">Glazing Line</option>
                                     <option value="Sortir Packing">Sortir Packing</option>
                                 </select>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-medium text-slate-700 mb-1">Kalimat Pengantar / Teks Konten (Bisa diketik bebas)</label>
+                                <textarea id="statusCustomIntro" rows="3" class="w-full text-xs p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none resize-y">Sehubungan dengan adanya penyesuaian personil di bagian operasional plant, maka dengan ini diajukan perubahan status data personil di bawah ini:</textarea>
                             </div>
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
@@ -224,30 +219,47 @@
                             </div>
                         </div>
 
-                        <!-- Form B & C: Tabel Dinamis (Gaji / Jadwal) -->
-                        <div id="formTabel" class="hidden space-y-3">
-                            <div class="flex justify-between items-center">
+                        <!-- Form B & C: Tabel Dinamis (Gaji / Lembur) -->
+                        <div id="formTabelGaji" class="hidden space-y-3">
+                            <div>
+                                <label class="block text-[11px] font-medium text-slate-700 mb-1">Kalimat Pengantar / Teks Konten (Bisa diketik bebas)</label>
+                                <textarea id="inputGajiIntro" rows="3" class="w-full text-xs p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none resize-y">Bersama ini kami informasikan bahwa karyawan tersebut di bawah ini ada yang belum mendapatkan Kekurangan Gaji dengan rincian sebagai berikut :</textarea>
+                            </div>
+
+                            <div class="flex justify-between items-center pt-1">
                                 <span class="text-xs font-semibold text-slate-700">Daftar Karyawan</span>
-                                <button type="button" id="btnAddRow"
-                                    class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 rounded-lg font-medium transition flex items-center gap-1">
+                                <button type="button" id="btnAddRowGaji" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 rounded-lg font-medium transition flex items-center gap-1">
                                     <span>+</span> Tambah Baris
                                 </button>
                             </div>
-                            <div id="tableInputsContainer" class="space-y-2.5 max-h-60 overflow-y-auto pr-1"></div>
+                            <div id="tableInputsContainerGaji" class="space-y-2.5 max-h-60 overflow-y-auto pr-1"></div>
+                        </div>
+
+                        <!-- Form C: Tabel Dinamis (Jadwal Kerja) -->
+                        <div id="formTabelJadwal" class="hidden space-y-3">
+                            <div>
+                                <label class="block text-[11px] font-medium text-slate-700 mb-1">Kalimat Pengantar / Teks Konten (Bisa diketik bebas)</label>
+                                <textarea id="inputJadwalIntro" rows="3" class="w-full text-xs p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none resize-y">Berikut kami informasikan bahwa ada perubahan jadwal kerja personil Plant KIA-WT dengan data personil dibawah ini :</textarea>
+                            </div>
+
+                            <div class="flex justify-between items-center pt-1">
+                                <span class="text-xs font-semibold text-slate-700">Daftar Karyawan</span>
+                                <button type="button" id="btnAddRowJadwal" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 rounded-lg font-medium transition flex items-center gap-1">
+                                    <span>+</span> Tambah Baris
+                                </button>
+                            </div>
+                            <div id="tableInputsContainerJadwal" class="space-y-2.5 max-h-60 overflow-y-auto pr-1"></div>
                         </div>
 
                         <!-- Form D: Permintaan Barang -->
                         <div id="formBarang" class="hidden space-y-2.5">
                             <div>
                                 <label class="block text-[11px] font-medium text-slate-700 mb-1">Judul Permintaan / Perihal</label>
-                                <input type="text" id="barangJudulPerihal"
-                                    value="Permintaan Komputer untuk Spv. Body Preparation"
-                                    class="w-full text-xs p-2 border border-slate-300 rounded-lg">
+                                <input type="text" id="barangJudulPerihal" value="Permintaan Komputer untuk Spv. Body Preparation" class="w-full text-xs p-2 border border-slate-300 rounded-lg">
                             </div>
                             <div>
-                                <label class="block text-[11px] font-medium text-slate-700 mb-1">Isi Surat Permintaan</label>
-                                <textarea id="barangIsiPesan" rows="5"
-                                    class="w-full text-xs p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none resize-y">Untuk menunjang aktivitas administrasi data kontrol operasional harian dan kegiatan focus improvement di bagian body preparation, maka dengan ini diajukan pengadaan 1 unit komputer yang akan dipergunakan oleh Supervisor Body Preparation & Press plant wall tile.</textarea>
+                                <label class="block text-[11px] font-medium text-slate-700 mb-1">Isi Surat Permintaan (Bisa diketik bebas)</label>
+                                <textarea id="barangIsiPesan" rows="5" class="w-full text-xs p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none resize-y">Untuk menunjang aktivitas administrasi data kontrol operasional harian dan kegiatan focus improvement di bagian body preparation, maka dengan ini diajukan pengadaan 1 unit komputer yang akan dipergunakan oleh Supervisor Body Preparation & Press plant wall tile.</textarea>
                             </div>
                         </div>
                     </div>
@@ -262,12 +274,10 @@
 
                 <!-- Footer Action Buttons -->
                 <div class="p-3.5 border-t border-slate-200 bg-slate-100 flex gap-2.5">
-                    <button id="btnSave" onclick="saveDraft()"
-                        class="flex-1 py-2.5 px-3 bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold rounded-lg shadow transition flex items-center justify-center gap-1.5">
+                    <button id="btnSave" onclick="saveDraft()" class="flex-1 py-2.5 px-3 bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold rounded-lg shadow transition flex items-center justify-center gap-1.5">
                         <span>💾</span> Simpan Ke Supabase
                     </button>
-                    <button id="btnPrint" onclick="window.print()"
-                        class="flex-1 py-2.5 px-3 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow transition flex items-center justify-center gap-1.5">
+                    <button id="btnPrint" onclick="window.print()" class="flex-1 py-2.5 px-3 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow transition flex items-center justify-center gap-1.5">
                         <span>🖨️</span> Cetak / PDF
                     </button>
                 </div>
@@ -275,11 +285,10 @@
 
             <!-- KOLOM KANAN: LIVE PREVIEW KERTAS A4 -->
             <div class="print-area w-full md:w-1/2 lg:w-7/12 h-full overflow-y-auto p-4 md:p-8 flex justify-center items-start bg-slate-300/80">
-                
+
                 <!-- Dokumen Kertas A4 -->
                 <div class="page-a4 text-black leading-relaxed font-sans text-sm border border-slate-300">
-                    
-                    <!-- Top Section -->
+
                     <div>
                         <!-- Header Title -->
                         <div class="text-center mb-6">
@@ -334,7 +343,7 @@
                     </div>
 
                     <!-- Bottom Section (Tanda Tangan) -->
-                    <div class="mt-8 pt-2">
+                    <div class="mt-16 pt-4">
                         <div id="prevTtdGrid" class="grid gap-4 text-center"></div>
                     </div>
 
@@ -348,7 +357,7 @@
         <!-- ==================== TAB 2: RIWAYAT MEMO (DATABASE SUPABASE) ==================== -->
         <div id="tabRiwayat" class="hidden h-full w-full overflow-y-auto p-4 md:p-8 bg-slate-100">
             <div class="max-w-6xl mx-auto space-y-6">
-                
+
                 <!-- Stat Cards -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-4">
@@ -376,7 +385,6 @@
 
                 <!-- Main Table Box -->
                 <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                    <!-- Filter & Search Bar -->
                     <div class="p-4 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-3">
                         <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Daftar Memo Tersimpan di Supabase</h3>
                         <div class="flex items-center space-x-2 w-full sm:w-auto">
@@ -388,7 +396,6 @@
                         </div>
                     </div>
 
-                    <!-- Table List -->
                     <div class="overflow-x-auto">
                         <table class="w-full text-xs text-left text-slate-600">
                             <thead class="bg-slate-100 text-slate-700 uppercase font-semibold border-b border-slate-200">
@@ -419,7 +426,6 @@
 
     <!-- ==================== LOGIKA JAVASCRIPT ==================== -->
     <script>
-        // Data Pejabat / Personel Tanda Tangan
         const listPersonel = [
             { nama: "Adih Hidayat", jabatan: "SI. Plant KIA-WT" },
             { nama: "Eko Raharjo", jabatan: "Head Of HRBP" },
@@ -428,10 +434,8 @@
             { nama: "Kairawee Teetuan", jabatan: "Operations Director" }
         ];
 
-        // State Data Tabel Dinamis
         let dataTabelGaji = [
-            { nama: "Diki Azis", nik: "241081", bagian: "KIA - Spv. Shift / Korlap Grup B W", keterangan: "SPLO 07 SEPTEMBER 2026 - 13 September 2026" },
-            { nama: "ORIZA CHOIRUNNISA", nik: "250425", bagian: "KIA - Operator Sortir Packing WT", keterangan: "SPLO 07 SEPTEMBER 2026 - 13 September 2027" }
+            { nama: "Fitrah Aulia Rachman", nik: "220404", bagian: "Spv. Shift / Korlap", keterangan: "SPLO 07 SEPTEMBER 2026 - 13 September 2026" }
         ];
 
         let dataTabelJadwal = [
@@ -444,7 +448,7 @@
         // Supabase Configuration
         const SUPABASE_URL = 'https://akgjkgkgfzdpfoyfmxno.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFrZ2prZ2tnZnpkcGZveWZteG5vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI1NDU0NDEsImV4cCI6MjEwODEyMTQ0MX0.akKCYFg_9OY77CDIrCKVYQAzCFxq-vIO0XmqP7yUCXw';
-        
+
         let supabaseClient = null;
         try {
             if (window.supabase) {
@@ -454,13 +458,11 @@
             console.error("Gagal menginisialisasi Supabase SDK:", e);
         }
 
-        // Format Bulan Romawi
         function getBulanRomawi(bulanIndex) {
             const romawi = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
             return romawi[bulanIndex] || "I";
         }
 
-        // Format Tanggal Indonesia
         function formatTanggalIndo(dateString) {
             if (!dateString) return "";
             const date = new Date(dateString);
@@ -469,7 +471,6 @@
             return `${String(date.getDate()).padStart(2, '0')}-${listBulan[date.getMonth()]}-${date.getFullYear()}`;
         }
 
-        // Switch Navigation Tabs
         function switchTab(tabName) {
             const tabGen = document.getElementById('tabGenerator');
             const tabRiw = document.getElementById('tabRiwayat');
@@ -490,7 +491,6 @@
             }
         }
 
-        // Inisialisasi Saat Halaman Dimuat
         window.addEventListener('DOMContentLoaded', () => {
             const today = new Date();
             const tahunSekarang = today.getFullYear();
@@ -507,41 +507,42 @@
             document.getElementById('inputNo').value = `${formatNoUrut} / SI.KIA-WT / ${bulanRomawi} / ${tahunSekarang}`;
             document.getElementById('inputTanggal').valueAsDate = today;
 
-            // Event Listeners
             document.getElementById('inputPerihal').addEventListener('change', onPerihalChange);
 
-            ['inputNo', 'inputTanggal', 'inputKepada', 'inputDari', 'statusSection', 'statusNama', 'statusNik', 'statusAwal', 'statusBaru', 'statusEffective', 'barangJudulPerihal', 'barangIsiPesan'].forEach(id => {
+            ['inputNo', 'inputTanggal', 'inputKepada', 'inputDari', 'statusSection', 'statusNama', 'statusNik', 'statusAwal', 'statusBaru', 'statusEffective', 'statusCustomIntro', 'inputGajiIntro', 'inputJadwalIntro', 'barangJudulPerihal', 'barangIsiPesan'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.addEventListener('input', renderPreview);
             });
 
-            document.getElementById('btnAddRow').addEventListener('click', () => {
-                const jenis = document.getElementById('inputPerihal').value;
-                if (jenis === 'gaji') {
-                    dataTabelGaji.push({ nama: "", nik: "", bagian: "", keterangan: "" });
-                } else if (jenis === 'jadwal') {
-                    dataTabelJadwal.push({ nama: "", nik: "", lama: "", baru: "", effective: "" });
-                }
+            document.getElementById('btnAddRowGaji').addEventListener('click', () => {
+                dataTabelGaji.push({ nama: "", nik: "", bagian: "", keterangan: "" });
                 renderFormInputs();
                 renderPreview();
             });
 
-            // Initial Render
+            document.getElementById('btnAddRowJadwal').addEventListener('click', () => {
+                dataTabelJadwal.push({ nama: "", nik: "", lama: "", baru: "", effective: "" });
+                renderFormInputs();
+                renderPreview();
+            });
+
             onPerihalChange();
         });
 
-        // Handler Pergantian Jenis Perihal
         function onPerihalChange() {
             const jenis = document.getElementById('inputPerihal').value;
 
             document.getElementById('formStatus').classList.add('hidden');
-            document.getElementById('formTabel').classList.add('hidden');
+            document.getElementById('formTabelGaji').classList.add('hidden');
+            document.getElementById('formTabelJadwal').classList.add('hidden');
             document.getElementById('formBarang').classList.add('hidden');
 
             if (jenis === 'status') {
                 document.getElementById('formStatus').classList.remove('hidden');
-            } else if (jenis === 'gaji' || jenis === 'jadwal') {
-                document.getElementById('formTabel').classList.remove('hidden');
+            } else if (jenis === 'gaji') {
+                document.getElementById('formTabelGaji').classList.remove('hidden');
+            } else if (jenis === 'jadwal') {
+                document.getElementById('formTabelJadwal').classList.remove('hidden');
             } else if (jenis === 'barang') {
                 document.getElementById('formBarang').classList.remove('hidden');
             }
@@ -551,13 +552,12 @@
             renderPreview();
         }
 
-        // Render Form Input Tabel Dinamis
         function renderFormInputs() {
             const jenis = document.getElementById('inputPerihal').value;
-            const container = document.getElementById('tableInputsContainer');
-            container.innerHTML = "";
 
             if (jenis === 'gaji') {
+                const container = document.getElementById('tableInputsContainerGaji');
+                container.innerHTML = "";
                 dataTabelGaji.forEach((row, idx) => {
                     const div = document.createElement('div');
                     div.className = "p-2.5 bg-white rounded-lg border border-slate-200 text-xs space-y-1.5 relative";
@@ -571,11 +571,13 @@
                             <input type="text" placeholder="NIK" value="${row.nik}" oninput="updateRowData('gaji', ${idx}, 'nik', this.value)" class="p-1.5 border rounded">
                         </div>
                         <input type="text" placeholder="Bagian / Jabatan" value="${row.bagian}" oninput="updateRowData('gaji', ${idx}, 'bagian', this.value)" class="w-full p-1.5 border rounded">
-                        <input type="text" placeholder="Keterangan Lembur" value="${row.keterangan}" oninput="updateRowData('gaji', ${idx}, 'keterangan', this.value)" class="w-full p-1.5 border rounded">
+                        <input type="text" placeholder="Keterangan / Yang belum terbayar" value="${row.keterangan}" oninput="updateRowData('gaji', ${idx}, 'keterangan', this.value)" class="w-full p-1.5 border rounded">
                     `;
                     container.appendChild(div);
                 });
             } else if (jenis === 'jadwal') {
+                const container = document.getElementById('tableInputsContainerJadwal');
+                container.innerHTML = "";
                 dataTabelJadwal.forEach((row, idx) => {
                     const div = document.createElement('div');
                     div.className = "p-2.5 bg-white rounded-lg border border-slate-200 text-xs space-y-1.5 relative";
@@ -612,7 +614,6 @@
             renderPreview();
         }
 
-        // Render Dropdown TTD
         function renderTtdSelectors() {
             const jenis = document.getElementById('inputPerihal').value;
             const container = document.getElementById('ttdSelectorsContainer');
@@ -652,7 +653,6 @@
             });
         }
 
-        // Render Live Preview A4
         function renderPreview() {
             const jenis = document.getElementById('inputPerihal').value;
 
@@ -669,7 +669,7 @@
                 const sec = document.getElementById('statusSection').value;
                 document.getElementById('prevPerihal').textContent = `Perubahan Status Personil ${sec}`;
 
-                elKalimatPembuka.textContent = `Sehubungan dengan adanya kekosongan Foreman Shift di section ${sec}. Maka dengan ini kami ajukan perubahan status nama personil di bawah ini:`;
+                elKalimatPembuka.textContent = document.getElementById('statusCustomIntro').value;
 
                 elContent.innerHTML = `
                     <div class="my-6 pl-4 space-y-2 text-sm font-medium">
@@ -684,9 +684,9 @@
                 elKalimatPenutup.textContent = "Demikian kami sampaikan, atas perhatian dan kerjasamanya kami ucapkan terima kasih.";
 
             } else if (jenis === 'gaji') {
-                document.getElementById('prevPerihal').textContent = "Pembayaran kekurangan Gaji";
+                document.getElementById('prevPerihal').textContent = "Pembayaran Kekurangan Gaji / Lembur";
 
-                elKalimatPembuka.textContent = "Bersama ini kami informasikan bahwa karyawan Outshorcing tersebut dibawah ini ada yang belum mendapatkan Pembayaran Lembur dengan rincian Sebagai Berkut :";
+                elKalimatPembuka.textContent = document.getElementById('inputGajiIntro').value;
 
                 let tableRowsHtml = dataTabelGaji.map((r, i) => `
                     <tr class="border-b border-black text-center">
@@ -706,19 +706,19 @@
                                 <th class="border-r border-black p-2">Nama Karyawan</th>
                                 <th class="border-r border-black p-2 w-20">Nik</th>
                                 <th class="border-r border-black p-2">Bagian</th>
-                                <th class="p-2">Yang belum terbayar Lembur</th>
+                                <th class="p-2">Yang belum terbayar</th>
                             </tr>
                         </thead>
                         <tbody>${tableRowsHtml}</tbody>
                     </table>
                 `;
 
-                elKalimatPenutup.innerHTML = "Sehubungan dengan hal tersebut mohon Kekurangan Gaji Personil tersebut di atas dibayarkan di penggajian Bulan Berikutnya.<br><br>Demikian atas perhatiannya dan kerjasamanya kami sampaikan,terima kasih.";
+                elKalimatPenutup.innerHTML = "Sehubungan dengan hal tersebut mohon Kekurangan Gaji Personil tersebut di atas dibayarkan di penggajian Bulan Berikutnya.<br><br>Demikian atas perhatiannya dan kerjasamanya kami sampaikan, terima kasih.";
 
             } else if (jenis === 'jadwal') {
                 document.getElementById('prevPerihal').textContent = "Perubahan Jadwal Kerja";
 
-                elKalimatPembuka.textContent = "Berikut kami informasikan bahwa ada perubahan jadwal kerja personil Plant KIA-WT dengan data personil dibawah ini :";
+                elKalimatPembuka.textContent = document.getElementById('inputJadwalIntro').value;
 
                 let tableRowsHtml = dataTabelJadwal.map((r, i) => `
                     <tr class="border-b border-black text-center">
@@ -761,7 +761,6 @@
             renderTtdGrid(jenis);
         }
 
-        // Render Tanda Tangan
         function renderTtdGrid(jenis) {
             const grid = document.getElementById('prevTtdGrid');
             grid.innerHTML = "";
@@ -788,7 +787,7 @@
                 const foundPersonel = listPersonel.find(p => p.nama === selectedNama) || { nama: selectedNama, jabatan: "" };
 
                 const col = document.createElement('div');
-                col.className = "flex flex-col justify-between h-32";
+                col.className = "flex flex-col justify-between h-48";
                 col.innerHTML = `
                     <p class="font-medium">${headers[i] || ""}</p>
                     <div>
@@ -800,7 +799,6 @@
             }
         }
 
-        // Simpan Draft ke Supabase & LocalStorage
         async function saveDraft() {
             const noMemo = document.getElementById('inputNo').value;
             const tanggal = document.getElementById('inputTanggal').value;
@@ -816,13 +814,11 @@
                 dari: dari,
                 perihal: teksPerihal,
                 jenis: jenisPerihal,
-                status: 'Belum Selesai' // Default status saat baru disimpan
+                status: 'Belum Selesai'
             };
 
-            // 1. Simpan ke LocalStorage browser
             localStorage.setItem('memo_draft_v2', JSON.stringify(draft));
 
-            // 2. Simpan ke Supabase
             if (supabaseClient) {
                 try {
                     const { data, error } = await supabaseClient
@@ -841,18 +837,15 @@
                         ]);
 
                     if (error) {
-                        console.error('Gagal menyimpan ke database:', error.message);
                         alert('Gagal menyimpan ke database: ' + error.message);
                         return;
                     }
                 } catch (err) {
-                    console.error("Exception saat simpan ke Supabase:", err);
                     alert("Terjadi kesalahan koneksi ke Supabase.");
                     return;
                 }
             }
 
-            // 3. Naikkan counter nomor memo jika berhasil
             let currentNoStr = noMemo.split('/')[0].trim();
             let currentNoInt = parseInt(currentNoStr);
             if (!isNaN(currentNoInt)) {
@@ -862,13 +855,12 @@
             showToast("✓ Data berhasil disimpan ke Cloud & counter nomor bertambah!");
         }
 
-        // Fetch Riwayat Memo dari Supabase
         async function fetchRiwayatMemo() {
             const tbody = document.getElementById('riwayatTableBody');
             tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400">Memuat data riwayat dari Supabase...</td></tr>`;
 
             if (!supabaseClient) {
-                tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-red-500 font-semibold">Supabase SDK belum siap. Pastikan koneksi internet stabil.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-red-500 font-semibold">Supabase SDK belum siap.</td></tr>`;
                 return;
             }
 
@@ -885,18 +877,16 @@
                 renderRiwayatTable(rawRiwayatMemos);
 
             } catch (error) {
-                console.error("Gagal mengambil data memo:", error.message);
                 tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-red-500 font-semibold">Gagal memuat data: ${error.message}</td></tr>`;
             }
         }
 
-        // Update Stat Cards pada Tab Riwayat
         function updateStatsCards(data) {
             document.getElementById('statTotalMemo').textContent = data.length;
-            
+
             const currentMonth = new Date().getMonth();
             const currentYear = new Date().getFullYear();
-            
+
             const countThisMonth = data.filter(item => {
                 if (!item.tanggal) return false;
                 const d = new Date(item.tanggal);
@@ -906,7 +896,6 @@
             document.getElementById('statMemoBulanIni').textContent = countThisMonth;
         }
 
-        // Render Tabel Riwayat (Disertai Toggle Switch Status Kapsul Hijau/Abu)
         function renderRiwayatTable(data) {
             const tbody = document.getElementById('riwayatTableBody');
             tbody.innerHTML = "";
@@ -919,7 +908,7 @@
             data.forEach((memo) => {
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
-                
+
                 const formattedCreatedAt = memo.created_at ? new Date(memo.created_at).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' }) : '-';
                 const isSelesai = memo.status === 'Memo Selesai' || memo.status === 'Selesai';
 
@@ -929,14 +918,12 @@
                     <td class="p-3">${memo.kepada || '-'}</td>
                     <td class="p-3 max-w-xs truncate font-semibold text-slate-700" title="${memo.perihal}">${memo.perihal || '-'}</td>
                     <td class="p-3">
-                        <!-- TOGGLE BUTTON STATUS KAPSUL -->
                         <button onclick="toggleStatus(${memo.id}, '${memo.status || 'Belum Selesai'}')" 
                             title="Klik untuk mengubah status TTD"
-                            class="px-3 py-1 rounded-full text-[11px] font-bold transition-all flex items-center gap-1.5 shadow-sm border ${
-                                isSelesai 
-                                ? 'bg-emerald-950 border-emerald-700 text-emerald-400 hover:bg-emerald-900' 
-                                : 'bg-slate-100 border-slate-300 text-slate-500 hover:bg-slate-200'
-                            }">
+                            class="px-3 py-1 rounded-full text-[11px] font-bold transition-all flex items-center gap-1.5 shadow-sm border ${isSelesai
+                        ? 'bg-emerald-950 border-emerald-700 text-emerald-400 hover:bg-emerald-900'
+                        : 'bg-slate-100 border-slate-300 text-slate-500 hover:bg-slate-200'
+                    }">
                             <span class="w-2 h-2 rounded-full ${isSelesai ? 'bg-emerald-400 animate-pulse' : 'bg-slate-400'}"></span>
                             <span>${isSelesai ? 'Memo Selesai' : 'Belum Selesai'}</span>
                         </button>
@@ -957,7 +944,6 @@
             });
         }
 
-        // FUNGSI TOGGLE STATUS MEMO DI SUPABASE
         async function toggleStatus(id, currentStatus) {
             if (!supabaseClient) return;
 
@@ -973,7 +959,6 @@
                 if (error) {
                     alert('Gagal mengupdate status: ' + error.message);
                 } else {
-                    // Update data lokal & render ulang tanpa reload penuh
                     const found = rawRiwayatMemos.find(m => m.id === id);
                     if (found) found.status = newStatus;
                     renderRiwayatTable(rawRiwayatMemos);
@@ -983,35 +968,25 @@
             }
         }
 
-        // Fungsi Hapus Memo dari Database Supabase
         async function deleteMemo(id) {
-            if (!confirm("Apakah Anda yakin ingin menghapus memo ini dari database cloud?")) {
-                return;
-            }
-
+            if (!confirm("Apakah Anda yakin ingin menghapus memo ini dari database cloud?")) return;
             if (!supabaseClient) return;
 
             try {
-                const { error } = await supabaseClient
-                    .from('memos')
-                    .delete()
-                    .eq('id', id);
-
+                const { error } = await supabaseClient.from('memos').delete().eq('id', id);
                 if (error) {
                     alert('Gagal menghapus memo: ' + error.message);
                 } else {
                     fetchRiwayatMemo();
                 }
             } catch (err) {
-                console.error("Gagal menghapus:", err);
                 alert("Terjadi kesalahan saat menghapus data.");
             }
         }
 
-        // Filter Riwayat Memo dengan Search Box
         function filterRiwayatMemo() {
             const query = document.getElementById('searchMemoInput').value.toLowerCase();
-            const filtered = rawRiwayatMemos.filter(m => 
+            const filtered = rawRiwayatMemos.filter(m =>
                 (m.no_memo && m.no_memo.toLowerCase().includes(query)) ||
                 (m.perihal && m.perihal.toLowerCase().includes(query)) ||
                 (m.kepada && m.kepada.toLowerCase().includes(query))
@@ -1019,13 +994,12 @@
             renderRiwayatTable(filtered);
         }
 
-        // Muat Data Memo dari Riwayat ke Form Editor Generator
         function loadMemoToEditor(noMemo, tanggal, kepada, dari, jenisPerihal) {
             document.getElementById('inputNo').value = noMemo || "";
             if (tanggal) document.getElementById('inputTanggal').value = tanggal;
             if (kepada) document.getElementById('inputKepada').value = kepada;
             if (dari) document.getElementById('inputDari').value = dari;
-            
+
             if (jenisPerihal && ['status', 'gaji', 'jadwal', 'barang'].includes(jenisPerihal)) {
                 document.getElementById('inputPerihal').value = jenisPerihal;
                 onPerihalChange();
