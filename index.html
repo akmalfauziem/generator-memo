@@ -21,7 +21,7 @@
             background-color: #f1f5f9;
         }
 
-        /* Styling Lembar Ukuran A4 untuk Layar */
+        /* Styling Lembar Ukuran A4 Portrait */
         .page-a4 {
             width: 210mm;
             min-height: 297mm;
@@ -34,10 +34,23 @@
             color: #000;
         }
 
+        /* Styling Lembar Ukuran A4 Landscape */
+        .page-a4-landscape {
+            width: 297mm;
+            min-height: 210mm;
+            padding: 15mm;
+            background: white;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
+            box-sizing: border-box;
+            display: block;
+            color: #000;
+        }
+
         /* Aturan Khusus Cetak / Print ke PDF */
         @media print {
             @page {
-                size: A4 portrait;
+                size: auto;
                 margin: 0;
             }
 
@@ -65,6 +78,16 @@
                 width: 210mm !important;
                 height: 297mm !important;
                 padding: 20mm !important;
+                box-shadow: none !important;
+                border: none !important;
+                page-break-after: always;
+                box-sizing: border-box;
+            }
+
+            .page-a4-landscape {
+                width: 297mm !important;
+                height: 210mm !important;
+                padding: 15mm !important;
                 box-shadow: none !important;
                 border: none !important;
                 page-break-after: always;
@@ -100,7 +123,7 @@
                 </nav>
 
                 <div class="hidden md:flex items-center space-x-2 text-[11px]">
-                    <span class="bg-slate-800 border border-slate-700 px-2.5 py-1 rounded-full font-medium text-slate-300">Format: A4 Portrait</span>
+                    <span id="labelFormatKertas" class="bg-slate-800 border border-slate-700 px-2.5 py-1 rounded-full font-medium text-slate-300">Format: A4 Portrait</span>
                     <span id="badgeSupabase" class="bg-emerald-950 border border-emerald-700 text-emerald-400 px-2.5 py-1 rounded-full font-medium flex items-center gap-1">
                         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                         Supabase Connected
@@ -362,7 +385,7 @@
             <div class="print-area w-full md:w-1/2 lg:w-7/12 h-full overflow-y-auto p-4 md:p-8 flex justify-center items-start bg-slate-300/80">
 
                 <!-- Dokumen Kertas A4 -->
-                <div class="page-a4 text-black leading-relaxed font-sans text-sm border border-slate-300 flex flex-col justify-between">
+                <div id="paperContainer" class="page-a4 text-black leading-relaxed font-sans text-sm border border-slate-300 flex flex-col justify-between">
 
                     <!-- CONTAINER DINAMIS PREVIEW -->
                     <div id="previewContainerContent" class="flex-1">
@@ -398,14 +421,16 @@
                                     <th class="p-3">Kategori</th>
                                     <th class="p-3">Nomor / Kode</th>
                                     <th class="p-3">Tanggal</th>
-                                    <th class="p-3">Keterangan / Perihal</th>
+                                    <th class="p-3">Kepada</th>
+                                    <th class="p-3">Perihal</th>
+                                    <th class="p-3">Status TTD</th>
                                     <th class="p-3">Waktu Simpan</th>
                                     <th class="p-3 text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="riwayatTableBody" class="divide-y divide-slate-200">
                                 <tr>
-                                    <td colspan="6" class="p-6 text-center text-slate-400">Memuat data dari database Supabase...</td>
+                                    <td colspan="8" class="p-6 text-center text-slate-400">Memuat data dari database Supabase...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -422,6 +447,7 @@
     <script>
         const listPersonel = [
             { nama: "Adih Hidayat", jabatan: "SI. Plant KIA-WT" },
+            { nama: "Triana Elmawan", jabatan: "SI. Plant KIA-WT" },
             { nama: "Eko Raharjo", jabatan: "Head Of HRBP" },
             { nama: "Ibrohim Aji", jabatan: "Mgr. Plant KIA-WT" },
             { nama: "Gunarso", jabatan: "Production Director" },
@@ -550,18 +576,27 @@
 
         function onKategoriChange() {
             const kat = document.getElementById('inputKategoriDokumen').value;
+            const paperContainer = document.getElementById('paperContainer');
+            const labelKertas = document.getElementById('labelFormatKertas');
+
             document.getElementById('panelFormMemo').classList.add('hidden');
             document.getElementById('panelFormRembusAm').classList.add('hidden');
             document.getElementById('panelFormRembusPulsa').classList.add('hidden');
 
             if (kat === 'memo') {
                 document.getElementById('panelFormMemo').classList.remove('hidden');
+                paperContainer.className = "page-a4 text-black leading-relaxed font-sans text-sm border border-slate-300 flex flex-col justify-between";
+                labelKertas.textContent = "Format: A4 Portrait";
                 onPerihalChange();
             } else if (kat === 'rembus_am') {
                 document.getElementById('panelFormRembusAm').classList.remove('hidden');
+                paperContainer.className = "page-a4-landscape text-black leading-relaxed font-sans text-sm border border-slate-300 flex flex-col justify-between";
+                labelKertas.textContent = "Format: A4 Landscape";
                 renderAmFormInputs();
             } else if (kat === 'rembus_pulsa') {
                 document.getElementById('panelFormRembusPulsa').classList.remove('hidden');
+                paperContainer.className = "page-a4 text-black leading-relaxed font-sans text-sm border border-slate-300 flex flex-col justify-between";
+                labelKertas.textContent = "Format: A4 Portrait";
                 renderPulsaFormInputs();
             }
             renderPreview();
@@ -878,7 +913,7 @@
                 const selectedNama = selEl ? selEl.value : listPersonel[0].nama;
                 const foundPersonel = listPersonel.find(p => p.nama === selectedNama) || { nama: selectedNama, jabatan: "" };
                 ttdColsHtml += `
-                    <div class="flex flex-col justify-between h-36">
+                    <div class="flex flex-col justify-between h-48">
                         <p class="font-medium">${headers[i] || ""}</p>
                         <div>
                             <p class="font-bold underline uppercase">${foundPersonel.nama}</p>
@@ -900,7 +935,7 @@
                         </div>
                         <div class="flex"><span class="w-16 font-semibold">Kepada</span><span class="mr-2">:</span><span>${kpdVal}</span></div>
                         <div class="flex"><span class="w-16 font-semibold">Dari</span><span class="mr-2">:</span><span>${dariVal}</span></div>
-                        <div class="flex"><span class="w-16 font-semibold">Perihal</span><span class="mr-2">:</span><span class="font-bold underline">${perihalText}</span></div>
+                        <div class="flex"><span class="w-16 font-semibold">Perihal</span><span class="mr-2">:</span><span id="prevPerihal" class="font-bold underline">${perihalText}</span></div>
                     </div>
                     <div class="w-full h-1 bg-black mb-5"></div>
                     <div class="space-y-4 text-justify px-1">
@@ -926,14 +961,14 @@
                 totalRp += Number(item.jumlah || 0);
                 return `
                     <tr class="border-b border-black text-center text-xs">
-                        <td class="border-r border-black p-1.5">${i + 1}</td>
-                        <td class="border-r border-black p-1.5">${item.tanggal}</td>
+                        <td class="border-r border-black p-1.5 whitespace-nowrap">${i + 1}</td>
+                        <td class="border-r border-black p-1.5 whitespace-nowrap">${item.tanggal}</td>
                         <td class="border-r border-black p-1.5 text-left">${item.tempat}</td>
                         <td class="border-r border-black p-1.5 text-left">${item.alamat}</td>
                         <td class="border-r border-black p-1.5">${item.jenis}</td>
-                        <td class="border-r border-black p-1.5 text-right font-medium">Rp ${Number(item.jumlah).toLocaleString('id-ID')}</td>
+                        <td class="border-r border-black p-1.5 text-right font-medium whitespace-nowrap">Rp ${Number(item.jumlah).toLocaleString('id-ID')}</td>
                         <td class="border-r border-black p-1.5 text-left uppercase">${item.karyawan}</td>
-                        <td class="border-r border-black p-1.5">${item.dept}</td>
+                        <td class="border-r border-black p-1.5 whitespace-nowrap">${item.dept}</td>
                         <td class="p-1.5 text-left">${item.tujuan}</td>
                     </tr>
                 `;
@@ -945,7 +980,7 @@
                     <div class="text-xs font-bold text-black mb-1">Daftar Nominatif Biaya Entertainment Internal</div>
                     <div class="text-[11px] text-slate-700 italic mb-4">(Entertainment list and similiarty)</div>
 
-                    <table class="w-full border-2 border-black text-[11px] my-2">
+                    <table class="w-full border-2 border-black text-[11px] my-2 table-auto">
                         <thead>
                             <tr class="bg-slate-200 border-b-2 border-black text-center font-bold">
                                 <th rowspan="2" class="border-r border-black p-1 w-8">No.</th>
@@ -954,20 +989,20 @@
                                 <th rowspan="2" class="p-1">Tujuan Entertainment<br>(Purpose of Entertainment)</th>
                             </tr>
                             <tr class="bg-slate-200 border-b-2 border-black text-center font-bold text-[10px]">
-                                <th class="border-r border-black p-1">Tanggal (Date)</th>
+                                <th class="border-r border-black p-1 whitespace-nowrap">Tanggal (Date)</th>
                                 <th class="border-r border-black p-1">Nama Tempat<br>(Entertaiment Venue)</th>
                                 <th class="border-r border-black p-1">Alamat Entertainment<br>(Address of entertainment)</th>
                                 <th class="border-r border-black p-1">Jenis Entertainment<br>(Kind of entertainment)</th>
-                                <th class="border-r border-black p-1">Jumlah Rp<br>(Amount)</th>
+                                <th class="border-r border-black p-1 whitespace-nowrap min-w-[90px]">Jumlah Rp<br>(Amount)</th>
                                 <th class="border-r border-black p-1">Nama Karyawan<br>(Employe Name)</th>
                                 <th class="border-r border-black p-1">Department</th>
                             </tr>
                         </thead>
                         <tbody>
                             ${rowsHtml}
-                            <tr class="border-t-2 border-black font-bold">
-                                <td colspan="5" class="border-r border-black p-1.5 text-right"></td>
-                                <td class="border-r border-black p-1.5 text-right">Rp ${totalRp.toLocaleString('id-ID')}</td>
+                            <tr class="border-t-2 border-black font-bold text-xs">
+                                <td colspan="5" class="border-r border-black p-1.5 text-left">TOTAL</td>
+                                <td class="border-r border-black p-1.5 text-right whitespace-nowrap">Rp ${totalRp.toLocaleString('id-ID')}</td>
                                 <td colspan="3" class="p-1.5"></td>
                             </tr>
                         </tbody>
@@ -977,11 +1012,11 @@
                 <div class="mt-20 pt-6">
                     <div class="grid grid-cols-2 text-center text-xs">
                         <div>
-                            <p class="mb-16 font-medium">Prepared by,</p>
+                            <p class="mb-24 font-medium">Prepared by,</p>
                             <p class="font-bold underline uppercase">${prepBy}</p>
                         </div>
                         <div>
-                            <p class="mb-16 font-medium">Approved by,</p>
+                            <p class="mb-24 font-medium">Approved by,</p>
                             <p class="font-bold underline uppercase">${apprBy}</p>
                         </div>
                     </div>
@@ -1019,7 +1054,6 @@
                 `;
             }).join('');
 
-            // Baris kosong pelengkap agar tabel menyerupai form cetak fisik
             for (let i = dataRembusPulsa.length; i < 6; i++) {
                 rowsHtml += `
                     <tr class="border-b border-black text-center text-xs h-6">
@@ -1127,43 +1161,81 @@
         async function saveDraft() {
             const kat = document.getElementById('inputKategoriDokumen').value;
             let payload = {};
+            let perihalText = "";
+            let detailItems = [];
+            let noMemoVal = "";
 
             if (kat === 'memo') {
+                noMemoVal = document.getElementById('inputNo').value;
+                const jenis = document.getElementById('inputPerihal').value;
+
+                if (jenis === 'status') {
+                    const sec = document.getElementById('statusSection').value;
+                    perihalText = `Perubahan Status Personil ${sec}`;
+                    detailItems = [];
+                } else if (jenis === 'gaji') {
+                    perihalText = "Pembayaran Kekurangan Gaji";
+                    detailItems = dataTabelGaji;
+                } else if (jenis === 'jadwal') {
+                    perihalText = "Perubahan Jadwal Kerja";
+                    detailItems = dataTabelJadwal;
+                } else if (jenis === 'barang') {
+                    perihalText = document.getElementById('barangJudulPerihal').value;
+                    detailItems = [];
+                }
+
                 payload = {
-                    no_memo: document.getElementById('inputNo').value,
+                    no_memo: noMemoVal,
                     tanggal: document.getElementById('inputTanggal').value,
                     kepada: document.getElementById('inputKepada').value,
                     dari: document.getElementById('inputDari').value,
-                    perihal: document.getElementById('prevPerihal')?.textContent || 'Memo',
-                    jenis_perihal: document.getElementById('inputPerihal').value,
+                    perihal: perihalText,
+                    jenis_perihal: jenis,
                     status: 'Belum Selesai',
+                    items: detailItems,
                     created_at: new Date().toISOString()
                 };
+
+                let currentNoStr = noMemoVal.split('/')[0].trim();
+                let currentNoInt = parseInt(currentNoStr);
+                if (!isNaN(currentNoInt)) {
+                    localStorage.setItem('kia_memo_counter', currentNoInt + 1);
+                }
+
             } else if (kat === 'rembus_am') {
+                noMemoVal = 'REM-AM-' + Date.now().toString().slice(-6);
+                perihalText = 'Daftar Nominatif Biaya Entertainment Internal (AM)';
+                detailItems = dataRembusAm;
+
                 payload = {
-                    no_memo: 'REM-AM-' + Date.now().toString().slice(-6),
+                    no_memo: noMemoVal,
                     tanggal: new Date().toISOString().split('T')[0],
                     kepada: document.getElementById('amCompanyName').value,
                     dari: document.getElementById('amPreparedBy').value,
-                    perihal: 'Daftar Nominatif Biaya Entertainment Internal (AM)',
+                    perihal: perihalText,
                     jenis_perihal: 'rembus_am',
-                    status: 'Selesai',
+                    status: 'Memo Selesai',
+                    items: detailItems,
                     created_at: new Date().toISOString()
                 };
+
             } else if (kat === 'rembus_pulsa') {
+                noMemoVal = document.getElementById('pulsaKiaCode').value;
+                perihalText = document.getElementById('pulsaDescription').value;
+                detailItems = dataRembusPulsa;
+
                 payload = {
-                    no_memo: document.getElementById('pulsaKiaCode').value,
+                    no_memo: noMemoVal,
                     tanggal: document.getElementById('pulsaDated').value,
                     kepada: document.getElementById('pulsaName').value,
                     dari: document.getElementById('pulsaDept').value,
-                    perihal: document.getElementById('pulsaDescription').value,
+                    perihal: perihalText,
                     jenis_perihal: 'rembus_pulsa',
-                    status: 'Selesai',
+                    status: 'Memo Selesai',
+                    items: detailItems,
                     created_at: new Date().toISOString()
                 };
             }
-
-            localStorage.setItem('kia_doc_draft', JSON.stringify(payload));
 
             if (supabaseClient) {
                 try {
@@ -1178,15 +1250,19 @@
                 }
             }
 
-            showToast("✓ Dokumen berhasil disimpan ke Cloud / Lokal!");
+            showToast("✓ Dokumen & rincian tabel berhasil disimpan ke Database!");
+            
+            if (typeof fetchRiwayatMemo === 'function') {
+                fetchRiwayatMemo();
+            }
         }
 
         async function fetchRiwayatMemo() {
             const tbody = document.getElementById('riwayatTableBody');
-            tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400">Memuat data dari Supabase...</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-slate-400">Memuat data dari Supabase...</td></tr>`;
 
             if (!supabaseClient) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-red-500 font-semibold">Supabase SDK belum siap.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-red-500 font-semibold">Supabase SDK belum siap.</td></tr>`;
                 return;
             }
 
@@ -1198,30 +1274,144 @@
 
                 if (error) throw error;
 
-                if (!data || data.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400">Belum ada dokumen tersimpan.</td></tr>`;
-                    return;
-                }
+                rawRiwayatMemos = data || [];
+                renderRiwayatTable(rawRiwayatMemos);
 
-                tbody.innerHTML = "";
-                data.forEach((item) => {
-                    const tr = document.createElement('tr');
-                    tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
-                    tr.innerHTML = `
-                        <td class="p-3 font-bold uppercase text-blue-600">${item.jenis_perihal || 'Memo'}</td>
-                        <td class="p-3 font-bold text-slate-800">${item.no_memo || '-'}</td>
-                        <td class="p-3">${formatTanggalIndo(item.tanggal)}</td>
-                        <td class="p-3 max-w-xs truncate font-semibold">${item.perihal || '-'}</td>
-                        <td class="p-3 text-slate-400 text-[11px]">${item.created_at ? new Date(item.created_at).toLocaleString('id-ID') : '-'}</td>
-                        <td class="p-3 text-center">
-                            <button onclick="deleteDoc(${item.id})" class="px-2 py-1 bg-red-100 hover:bg-red-200 text-red-700 font-semibold rounded text-[11px]">🗑️ Hapus</button>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
-                });
             } catch (error) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-red-500 font-semibold">Gagal memuat: ${error.message}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-red-500 font-semibold">Gagal memuat: ${error.message}</td></tr>`;
             }
+        }
+
+        function renderRiwayatTable(data) {
+            const tbody = document.getElementById('riwayatTableBody');
+            tbody.innerHTML = "";
+
+            if (!data || data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-slate-400">Belum ada dokumen tersimpan di database.</td></tr>`;
+                return;
+            }
+
+            data.forEach((memo) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+
+                const formattedCreatedAt = memo.created_at ? new Date(memo.created_at).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' }) : '-';
+                const isSelesai = memo.status === 'Memo Selesai' || memo.status === 'Selesai';
+
+                tr.innerHTML = `
+                    <td class="p-3 font-bold uppercase text-blue-600">${memo.jenis_perihal || 'Memo'}</td>
+                    <td class="p-3 font-bold text-slate-800">${memo.no_memo || '-'}</td>
+                    <td class="p-3 font-medium">${formatTanggalIndo(memo.tanggal)}</td>
+                    <td class="p-3">${memo.kepada || '-'}</td>
+                    <td class="p-3 max-w-xs truncate font-semibold text-slate-700" title="${memo.perihal}">${memo.perihal || '-'}</td>
+                    <td class="p-3">
+                        <button onclick="toggleStatus(${memo.id}, '${memo.status || 'Belum Selesai'}')" 
+                            title="Klik untuk mengubah status TTD"
+                            class="px-3 py-1 rounded-full text-[11px] font-bold transition-all flex items-center gap-1.5 shadow-sm border ${isSelesai
+                        ? 'bg-emerald-950 border-emerald-700 text-emerald-400 hover:bg-emerald-900'
+                        : 'bg-slate-100 border-slate-300 text-slate-500 hover:bg-slate-200'
+                    }">
+                            <span class="w-2 h-2 rounded-full ${isSelesai ? 'bg-emerald-400 animate-pulse' : 'bg-slate-400'}"></span>
+                            <span>${isSelesai ? 'Memo Selesai' : 'Belum Selesai'}</span>
+                        </button>
+                    </td>
+                    <td class="p-3 text-slate-400 text-[11px]">${formattedCreatedAt}</td>
+                    <td class="p-3 text-center space-x-1">
+                        <button onclick="loadMemoFromDb(${memo.id})" 
+                            class="px-2 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold rounded transition text-[11px]">
+                            👁️ Muat
+                        </button>
+                        <button onclick="deleteDoc(${memo.id})" 
+                            class="px-2 py-1 bg-red-100 hover:bg-red-200 text-red-700 font-semibold rounded transition text-[11px]">
+                            🗑️ Hapus
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function toggleStatus(id, currentStatus) {
+            if (!supabaseClient) return;
+
+            const isCurrentSelesai = currentStatus === 'Memo Selesai' || currentStatus === 'Selesai';
+            const newStatus = isCurrentSelesai ? 'Belum Selesai' : 'Memo Selesai';
+
+            try {
+                const { error } = await supabaseClient
+                    .from('memos')
+                    .update({ status: newStatus })
+                    .eq('id', id);
+
+                if (error) {
+                    alert('Gagal mengupdate status: ' + error.message);
+                } else {
+                    const found = rawRiwayatMemos.find(m => m.id === id);
+                    if (found) found.status = newStatus;
+                    renderRiwayatTable(rawRiwayatMemos);
+                }
+            } catch (err) {
+                console.error("Gagal mengupdate status:", err);
+            }
+        }
+
+        function loadMemoFromDb(id) {
+            const memo = rawRiwayatMemos.find(m => m.id === id);
+            if (!memo) return;
+
+            const jenisPerihal = memo.jenis_perihal;
+            const itemsData = memo.items || [];
+
+            if (jenisPerihal === 'rembus_am') {
+                document.getElementById('inputKategoriDokumen').value = 'rembus_am';
+                onKategoriChange();
+                if (memo.kepada) document.getElementById('amCompanyName').value = memo.kepada;
+                if (memo.dari) document.getElementById('amPreparedBy').value = memo.dari;
+
+                if (itemsData.length > 0) {
+                    dataRembusAm = itemsData;
+                    renderAmFormInputs();
+                }
+            } else if (jenisPerihal === 'rembus_pulsa') {
+                document.getElementById('inputKategoriDokumen').value = 'rembus_pulsa';
+                onKategoriChange();
+                if (memo.no_memo) document.getElementById('pulsaKiaCode').value = memo.no_memo;
+                if (memo.tanggal) document.getElementById('pulsaDated').value = memo.tanggal;
+                if (memo.kepada) document.getElementById('pulsaName').value = memo.kepada;
+                if (memo.dari) document.getElementById('pulsaDept').value = memo.dari;
+
+                if (itemsData.length > 0) {
+                    dataRembusPulsa = itemsData;
+                    renderPulsaFormInputs();
+                }
+            } else {
+                document.getElementById('inputKategoriDokumen').value = 'memo';
+                onKategoriChange();
+                document.getElementById('inputNo').value = memo.no_memo || "";
+                if (memo.tanggal) document.getElementById('inputTanggal').value = memo.tanggal;
+                if (memo.kepada) document.getElementById('inputKepada').value = memo.kepada;
+                if (memo.dari) document.getElementById('inputDari').value = memo.dari;
+
+                if (jenisPerihal && ['status', 'gaji', 'jadwal', 'barang'].includes(jenisPerihal)) {
+                    document.getElementById('inputPerihal').value = jenisPerihal;
+                    onPerihalChange();
+
+                    if (itemsData.length > 0) {
+                        if (jenisPerihal === 'gaji') {
+                            dataTabelGaji = itemsData;
+                            renderFormInputs();
+                        } else if (jenisPerihal === 'jadwal') {
+                            dataTabelJadwal = itemsData;
+                            renderFormInputs();
+                        }
+                    }
+                } else {
+                    renderPreview();
+                }
+            }
+
+            switchTab('generator');
+            showToast("✓ Dokumen & rincian tabel berhasil dimuat dari Supabase!");
         }
 
         async function deleteDoc(id) {
